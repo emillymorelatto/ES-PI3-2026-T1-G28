@@ -1,6 +1,6 @@
-# MESCLA INVESTE - PROJETO INTEGRADOR III
-## es-pi3-2026-t1-g28
- ## Equipe
+# MESCLA INVESTE
+## PROJETO INTEGRADOR III
+## Equipe 28
 
 | Nome | RA |
 |------|------|
