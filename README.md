@@ -8,4 +8,4 @@
 | Emilly Morelatto Barbosa | 25003163 |
 | Murilo Moraes | 25000073 |
 | Rodrigo Duarte Conceição Gabi | 25001714 |
-| Thiago | 25000845 |
+| Tiago | 25000845 |
