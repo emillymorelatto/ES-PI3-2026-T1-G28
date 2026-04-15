@@ -11,7 +11,7 @@ class TelaCadastro2 extends StatelessWidget {
         backgroundColor: Colors.grey[200],
         elevation: 0,
         title: const Text(
-          'CADASTRO ...',
+          'CADASTRO',
           style: TextStyle(color: Colors.grey, fontSize: 18),
         ),
       ),
