@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/screens/telaCadastro1.dart';
+import 'telalogin.dart';
+import 'telaCadastro2.dart';
 
-class TelaLogin extends StatelessWidget {
-  const TelaLogin({super.key});
+class TelaCadastro1 extends StatelessWidget {
+  const TelaCadastro1({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +13,7 @@ class TelaLogin extends StatelessWidget {
         backgroundColor: Colors.grey[200],
         elevation: 0,
         title: const Text(
-          'LOGIN ...',
+          'CADASTRO ...',
           style: TextStyle(color: Colors.grey, fontSize: 18),
         ),
       ),
@@ -21,83 +22,84 @@ class TelaLogin extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 60),
-            // Logo Icone
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFC153),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(Icons.trending_up, size: 50, color: Colors.black),
-            ),
-            const SizedBox(height: 10),
-            // Logo Texto
-            const Text(
-              'Mescla Invest',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
-              ),
-            ),
-            const Text(
-              'Acesse sua conta para continuar',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-            ),
-            const SizedBox(height: 40),
-            
-            // Campo E-mail
+
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text("E-mail", style: TextStyle(fontWeight: FontWeight.w500)),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Digite seu e-mail',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-              ),
-            ),
-            
-            const SizedBox(height: 20),
-            
-            // Campo Senha
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text("Senha", style: TextStyle(fontWeight: FontWeight.w500)),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: '........',
-                suffixIcon: const Icon(Icons.visibility_off_outlined),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-              ),
-            ),
-            
-            // Esqueci minha senha
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'esqueci minha senha',
-                  style: TextStyle(color: Color(0xFFFFC153)),
+              child: Text(
+                textAlign: TextAlign.left,
+                'PASSO 1 DE 2',
+                style: TextStyle(
+                  color: Color(0xFFFFC153),
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
                 ),
               ),
             ),
-            
+
+            // Logo Texto
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                textAlign: TextAlign.left,
+                'Criar conta',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+
+            const Text(
+              'Preencha seus dados pessoais para iniciar o cadastro na Mescla Invest',
+              style: TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+            const SizedBox(height: 40),
+
+            // Campo Nome Completo
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text("Nome Completo", style: TextStyle(fontWeight: FontWeight.w500)),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'Digite seu nome completo',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+            ),
+
             const SizedBox(height: 20),
-            
-            // Botão Entrar
+
+            // Campo CPF
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text("CPF", style: TextStyle(fontWeight: FontWeight.w500)),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              decoration: InputDecoration(
+                hintText: '000.000.000-00',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+            ),
+
+            const SizedBox(height: 70),
+
+            // Botão Próximo
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push<TelaCadastro1>(
+                    context,
+                    MaterialPageRoute(builder: (context) => const TelaCadastro2()),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFC153),
                   shape: RoundedRectangleBorder(
@@ -105,28 +107,28 @@ class TelaLogin extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  'Entrar',
+                  'Próximo',
                   style: TextStyle(color: Colors.black, fontSize: 18),
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 80),
-            
+
             // Rodapé Cadastro
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('ainda não tem conta? '),
+                const Text('Já tem uma conta? '),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push<TelaLogin>(
+                    Navigator.push<TelaCadastro1>(
                       context,
-                      MaterialPageRoute(builder: (context) => const TelaCadastro1()),
+                      MaterialPageRoute(builder: (context) => const TelaLogin()),
                     );
                   },
                   child: const Text(
-                    'cadastre-se',
+                    'Entrar',
                     style: TextStyle(
                       color: Color(0xFFFFC153),
                       fontWeight: FontWeight.bold,

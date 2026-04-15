@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/screens/telaCadastro1.dart';
 
-class TelaLogin extends StatelessWidget {
-  const TelaLogin({super.key});
+class TelaCadastro2 extends StatelessWidget {
+  const TelaCadastro2({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +11,7 @@ class TelaLogin extends StatelessWidget {
         backgroundColor: Colors.grey[200],
         elevation: 0,
         title: const Text(
-          'LOGIN ...',
+          'CADASTRO ...',
           style: TextStyle(color: Colors.grey, fontSize: 18),
         ),
       ),
@@ -21,31 +20,41 @@ class TelaLogin extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 60),
-            // Logo Icone
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFC153),
-                borderRadius: BorderRadius.circular(8),
+
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                textAlign: TextAlign.left,
+                'PASSO 2 DE 2',
+                style: TextStyle(
+                  color: Color(0xFFFFC153),
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
               ),
-              child: const Icon(Icons.trending_up, size: 50, color: Colors.black),
             ),
-            const SizedBox(height: 10),
+
             // Logo Texto
-            const Text(
-              'Mescla Invest',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                textAlign: TextAlign.left,
+                'Criar conta',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
               ),
             ),
+
             const Text(
-              'Acesse sua conta para continuar',
+              'Preencha seus dados pessoais para iniciar o cadastro na Mescla Invest',
               style: TextStyle(color: Colors.grey, fontSize: 14),
             ),
             const SizedBox(height: 40),
-            
+
             // Campo E-mail
             const Align(
               alignment: Alignment.centerLeft,
@@ -54,14 +63,28 @@ class TelaLogin extends StatelessWidget {
             const SizedBox(height: 8),
             TextField(
               decoration: InputDecoration(
-                hintText: 'Digite seu e-mail',
+                hintText: 'Digite o seu melhor e-mail',
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               ),
             ),
-            
             const SizedBox(height: 20),
-            
+
+            // Campo Telefone
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text("Telefone", style: TextStyle(fontWeight: FontWeight.w500)),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              decoration: InputDecoration(
+                hintText: '(00) 00000-0000',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+            ),
+            const SizedBox(height: 20),
+
             // Campo Senha
             const Align(
               alignment: Alignment.centerLeft,
@@ -71,28 +94,34 @@ class TelaLogin extends StatelessWidget {
             TextField(
               obscureText: true,
               decoration: InputDecoration(
-                hintText: '........',
+                hintText: 'Crie sua senha',
                 suffixIcon: const Icon(Icons.visibility_off_outlined),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               ),
             ),
-            
-            // Esqueci minha senha
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'esqueci minha senha',
-                  style: TextStyle(color: Color(0xFFFFC153)),
-                ),
+            const SizedBox(height: 20),
+
+            // Campo Confirma Senha
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text("Confirmar Senha", style: TextStyle(fontWeight: FontWeight.w500)),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              obscureText: true,
+              decoration: InputDecoration(
+                hintText: 'Repita sua senha',
+                suffixIcon: const Icon(Icons.visibility_off_outlined),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               ),
             ),
-            
             const SizedBox(height: 20),
-            
-            // Botão Entrar
+
+            const SizedBox(height: 70),
+
+            // Botão Cadastrar
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -105,36 +134,13 @@ class TelaLogin extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  'Entrar',
+                  'Cadastrar',
                   style: TextStyle(color: Colors.black, fontSize: 18),
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 80),
-            
-            // Rodapé Cadastro
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('ainda não tem conta? '),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push<TelaLogin>(
-                      context,
-                      MaterialPageRoute(builder: (context) => const TelaCadastro1()),
-                    );
-                  },
-                  child: const Text(
-                    'cadastre-se',
-                    style: TextStyle(
-                      color: Color(0xFFFFC153),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
       ),

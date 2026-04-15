@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:mobile/screens/telaCadastro1.dart';
+import 'package:mobile/screens/telaCadastro2.dart';
 import 'firebase_options.dart';
 import 'screens/telalogin.dart';
 
