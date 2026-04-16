@@ -63,7 +63,7 @@ class TelaCadastro2 extends StatelessWidget {
             const SizedBox(height: 8),
             TextField(
               decoration: InputDecoration(
-                hintText: 'Digite o seu melhor e-mail',
+                hintText: 'Digite o seu melhor e-mail!',
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               ),

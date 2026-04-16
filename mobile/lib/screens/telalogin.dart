@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/screens/telaCadastro1.dart';
+import 'package:mobile/screens/telarecuperacaosenha.dart';
 
 class TelaLogin extends StatelessWidget {
   const TelaLogin({super.key});
@@ -82,7 +83,10 @@ class TelaLogin extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const RecuperarSenhaScreen()),
+                  );
+                },
                 child: const Text(
                   'esqueci minha senha',
                   style: TextStyle(color: Color(0xFFFFC153)),

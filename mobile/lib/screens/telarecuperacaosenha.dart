@@ -1,26 +1,4 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Recuperar Senha',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-        fontFamily: 'Roboto',
-      ),
-      home: const RecuperarSenhaScreen(),
-    );
-  }
-}
-
 class RecuperarSenhaScreen extends StatelessWidget {
   const RecuperarSenhaScreen({super.key});
 
@@ -41,8 +19,13 @@ class RecuperarSenhaScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.arrow_back, color: Color(0xFF001529)),
-                  const SizedBox(width: 16),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color:Color(0xFF001529)),
+                    onPressed: () {
+                      Navigator.pop(context); // remove a tela atual (volta pra de login)
+                  },
+                  ),
+                  const SizedBox(width: 10),
                   Text(
                     'Recuperar Senha',
                     style: TextStyle(
