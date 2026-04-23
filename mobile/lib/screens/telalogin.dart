@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/screens/telaCadastro1.dart';
 import 'package:mobile/screens/telarecuperacaosenha.dart';
+import 'package:mobile/screens/telacarteira.dart';
 
 class TelaLogin extends StatelessWidget {
   const TelaLogin({super.key});
@@ -101,7 +102,9 @@ class TelaLogin extends StatelessWidget {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const TelaCarteira()));
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFC153),
                   shape: RoundedRectangleBorder(

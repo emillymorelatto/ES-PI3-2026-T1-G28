@@ -1,186 +1,427 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+class TelaCatalogo extends StatelessWidget {
+  const TelaCatalogo({super.key});
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Mescla Invest',
-      theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xFFF5F6F8),
-        fontFamily: 'Arial',
-      ),
-      home: const CatalogoPage(),
-    );
-  }
-}
-
-class CatalogoPage extends StatelessWidget {
-  const CatalogoPage({super.key});
+  static const _startups = [
+    {
+      'nome': 'HealthAI Sync',
+      'local': 'São Paulo, SP',
+      'setor': 'Healthtech',
+      'corSetor': Color(0xFFE8F5E9),
+      'corSetorTexto': Color(0xFF2E7D32),
+      'icone': Icons.favorite_outline,
+      'corIcone': Color(0xFF43A047),
+      'descricao':
+          'Plataforma baseada em IA que unifica prontuários médicos e prevê riscos de doenças crônicas com 94% de precisão.',
+      'estagio': 'Série A',
+      'investimento': 'R\$ 15M',
+    },
+    {
+      'nome': 'AgroConnect',
+      'local': 'Ribeirão Preto, SP',
+      'setor': 'Agtech',
+      'corSetor': Color(0xFFF1F8E9),
+      'corSetorTexto': Color(0xFF558B2F),
+      'icone': Icons.eco_outlined,
+      'corIcone': Color(0xFF7CB342),
+      'descricao':
+          'Sensores IoT para monitoramento do solo e clima em tempo real, otimizando insumos agrícolas para pequenos produtores.',
+      'estagio': 'Seed',
+      'investimento': 'R\$ 2.5M',
+    },
+    {
+      'nome': 'PayFlow',
+      'local': 'Curitiba, PR',
+      'setor': 'Fintech',
+      'corSetor': Color(0xFFE8EAF6),
+      'corSetorTexto': Color(0xFF3949AB),
+      'icone': Icons.credit_card_outlined,
+      'corIcone': Color(0xFF5C6BC0),
+      'descricao':
+          'Solução completa de embedded finance para empresas oferecerem serviços bancários white-label em poucas semanas.',
+      'estagio': 'Série B',
+      'investimento': 'R\$ 45M',
+    },
+    {
+      'nome': 'LogisRoute',
+      'local': 'Campinas, SP',
+      'setor': 'Logtech',
+      'corSetor': Color(0xFFFFF8E1),
+      'corSetorTexto': Color(0xFFF57F17),
+      'icone': Icons.local_shipping_outlined,
+      'corIcone': Color(0xFFFFB300),
+      'descricao':
+          'Software de roteirização inteligente que reduz custos de entrega em até 30% usando algoritmos preditivos.',
+      'estagio': 'Seed',
+      'investimento': 'R\$ 4M',
+    },
+    {
+      'nome': 'EduQuest',
+      'local': 'Florianópolis, SC',
+      'setor': 'Edtech',
+      'corSetor': Color(0xFFFCE4EC),
+      'corSetorTexto': Color(0xFFC62828),
+      'icone': Icons.school_outlined,
+      'corIcone': Color(0xFFE53935),
+      'descricao':
+          'Plataforma de gamificação e aprendizado adaptativo que aumenta o engajamento de alunos no ensino médio.',
+      'estagio': 'Série A',
+      'investimento': 'R\$ 12M',
+    },
+    {
+      'nome': 'CyberGuard AI',
+      'local': 'Rio de Janeiro, RJ',
+      'setor': 'Security',
+      'corSetor': Color(0xFFEDE7F6),
+      'corSetorTexto': Color(0xFF4527A0),
+      'icone': Icons.shield_outlined,
+      'corIcone': Color(0xFF7E57C2),
+      'descricao':
+          'Detecção de ameaças cibernéticas em tempo real para PMEs, sem necessidade de hardware dedicado na infraestrutura.',
+      'estagio': 'Pré-Seed',
+      'investimento': 'R\$ 800k',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          // 🔝 HEADER
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            color: Colors.white,
-            child: Row(
-              children: [
-                const Icon(Icons.show_chart, color: Colors.amber),
-                const SizedBox(width: 8),
-                const Text(
-                  "Mescla Invest",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const Spacer(),
-                menuTopo("Dashboard"),
-                menuTopo("Catálogo", ativo: true),
-                menuTopo("Meu Portfólio"),
-                menuTopo("Relatórios"),
-                const SizedBox(width: 16),
-                const CircleAvatar(radius: 14)
-              ],
-            ),
-          ),
+      backgroundColor: const Color(0xFFF5F6F8),
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildHeader(context),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Título
+                    const Text(
+                      'Catálogo de Startups',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF1A1A1A),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Explore e descubra oportunidades de investimento em startups inovadoras de diversos setores e estágios de crescimento.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF888888),
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
 
-          // 🔽 CONTEÚDO
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Catálogo de Startups",
-                    style:
-                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    "Explore e descubra oportunidades de investimento em startups inovadoras.",
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // 🔍 BUSCA + FILTROS
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: "Buscar por nome ou palavra-chave...",
-                            prefixIcon: const Icon(Icons.search),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
+                    // Busca
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: const Color(0xFFE0E0E0)),
+                      ),
+                      child: const TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Buscar por nome ou palavra-chave...',
+                          hintStyle: TextStyle(
+                              fontSize: 13, color: Color(0xFFAAAAAA)),
+                          prefixIcon: Icon(Icons.search,
+                              color: Color(0xFFAAAAAA), size: 20),
+                          border: InputBorder.none,
+                          contentPadding:
+                              EdgeInsets.symmetric(vertical: 12),
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      filtro("Setor"),
-                      const SizedBox(width: 8),
-                      filtro("Estágio"),
-                      const SizedBox(width: 8),
-                      filtro("Localização"),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // 📦 GRID DE CARDS
-                  Expanded(
-                    child: GridView.count(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 1.3,
-                      children: const [
-                        StartupCard(
-                          nome: "HealthAI Sync",
-                          local: "São Paulo, SP",
-                          descricao:
-                              "Plataforma baseada em inteligência artificial que unifica prontuários médicos.",
-                          estagio: "Série A",
-                          investimento: "R\$ 15M",
-                        ),
-                        StartupCard(
-                          nome: "AgroConnect",
-                          local: "Ribeirão Preto, SP",
-                          descricao:
-                              "Sensores IoT para monitoramento agrícola em tempo real.",
-                          estagio: "Seed",
-                          investimento: "R\$ 2.5M",
-                        ),
-                        StartupCard(
-                          nome: "PayFlow",
-                          local: "Curitiba, PR",
-                          descricao:
-                              "Solução completa de embedded finance para empresas.",
-                          estagio: "Série B",
-                          investimento: "R\$ 45M",
-                        ),
-                        StartupCard(
-                          nome: "LogisRoute",
-                          local: "Campinas, SP",
-                          descricao:
-                              "Software de roteirização inteligente para logística.",
-                          estagio: "Seed",
-                          investimento: "R\$ 4M",
-                        ),
-                        StartupCard(
-                          nome: "EduQuest",
-                          local: "Florianópolis, SC",
-                          descricao:
-                              "Plataforma educacional com aprendizado adaptativo.",
-                          estagio: "Série A",
-                          investimento: "R\$ 12M",
-                        ),
-                        StartupCard(
-                          nome: "CyberGuard AI",
-                          local: "Rio de Janeiro, RJ",
-                          descricao:
-                              "Detecção de ameaças cibernéticas em tempo real.",
-                          estagio: "Pré-Seed",
-                          investimento: "R\$ 800k",
-                        ),
-                      ],
                     ),
-                  ),
+                    const SizedBox(height: 10),
 
-                  // 🔻 MENU INFERIOR
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    // Filtros
+                    Row(
                       children: [
-                        MenuItem(
-                            icon: Icons.account_balance_wallet,
-                            label: "Carteira"),
-                        MenuItem(
-                            icon: Icons.menu_book, label: "Aprender"),
-                        MenuItem(
-                            icon: Icons.attach_money, label: "Investir"),
-                        MenuItem(
-                            icon: Icons.bar_chart, label: "Gráficos"),
+                        _buildFiltro(Icons.tune, 'Setor'),
+                        const SizedBox(width: 8),
+                        _buildFiltro(Icons.trending_up, 'Estágio'),
+                        const SizedBox(width: 8),
+                        _buildFiltro(Icons.location_on_outlined,
+                            'Localização'),
                       ],
                     ),
-                  )
+                    const SizedBox(height: 20),
+
+                    // Cards — lista vertical (melhor para mobile)
+                    ..._startups.map((s) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _StartupCard(startup: s),
+                        )),
+                  ],
+                ),
+              ),
+            ),
+            _buildBottomNav(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      color: Colors.white,
+      child: Row(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF3E0),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(Icons.show_chart,
+                color: Color(0xFFE67E22), size: 18),
+          ),
+          const SizedBox(width: 8),
+          const Text(
+            'Mescla Invest',
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 15,
+              color: Color(0xFF1A1A1A),
+            ),
+          ),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFiltro(IconData icon, String texto) {
+    return Expanded(
+      child: OutlinedButton.icon(
+        onPressed: () {},
+        icon: Icon(icon, size: 14, color: const Color(0xFF555555)),
+        label: Text(
+          texto,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Color(0xFF555555),
+          ),
+        ),
+        style: OutlinedButton.styleFrom(
+          backgroundColor: Colors.white,
+          side: const BorderSide(color: Color(0xFFDDDDDD)),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomNav(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: _buildNavItem(
+                    Icons.account_balance_wallet_rounded, 'Carteira', false),
+              ),
+              _buildNavItem(Icons.menu_book_outlined, 'Aprender', false),
+              _buildNavItem(
+                  Icons.monetization_on_outlined, 'Investir', true),
+              _buildNavItem(Icons.bar_chart_rounded, 'Gráficos', false),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, bool ativo) {
+    final color =
+        ativo ? const Color(0xFFE67E22) : const Color(0xFF999999);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 24, color: color),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: color,
+            fontWeight: ativo ? FontWeight.w600 : FontWeight.w400,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Card de Startup ───────────────────────────────────────────────────────────
+class _StartupCard extends StatelessWidget {
+  final Map<String, dynamic> startup;
+
+  const _StartupCard({required this.startup});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Linha do topo: ícone + nome + badge setor
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: startup['corSetor'] as Color,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  startup['icone'] as IconData,
+                  color: startup['corIcone'] as Color,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      startup['nome'] as String,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                        color: Color(0xFF1A1A1A),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on_outlined,
+                            size: 12, color: Color(0xFF888888)),
+                        const SizedBox(width: 2),
+                        Text(
+                          startup['local'] as String,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF888888),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              // Badge setor
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: startup['corSetor'] as Color,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  startup['setor'] as String,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: startup['corSetorTexto'] as Color,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // Descrição
+          Text(
+            startup['descricao'] as String,
+            style: const TextStyle(
+              fontSize: 13,
+              color: Color(0xFF555555),
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Estágio e Financiamento
+          Row(
+            children: [
+              _buildInfo('Estágio', startup['estagio'] as String),
+              const SizedBox(width: 24),
+              _buildInfo(
+                  'Financiamento', startup['investimento'] as String),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Botão
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFE67E22),
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Ver detalhes',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600, fontSize: 14),
+                  ),
+                  SizedBox(width: 6),
+                  Icon(Icons.arrow_forward, size: 16),
                 ],
               ),
             ),
@@ -190,111 +431,22 @@ class CatalogoPage extends StatelessWidget {
     );
   }
 
-  static Widget filtro(String texto) {
-    return ElevatedButton(
-      onPressed: () {},
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
-        side: const BorderSide(color: Colors.grey),
-      ),
-      child: Text(texto),
-    );
-  }
-
-  static Widget menuTopo(String texto, {bool ativo = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Text(
-        texto,
-        style: TextStyle(
-          color: ativo ? Colors.black : Colors.grey,
-          fontWeight: ativo ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
-    );
-  }
-}
-
-// 📦 CARD
-class StartupCard extends StatelessWidget {
-  final String nome;
-  final String local;
-  final String descricao;
-  final String estagio;
-  final String investimento;
-
-  const StartupCard({
-    super.key,
-    required this.nome,
-    required this.local,
-    required this.descricao,
-    required this.estagio,
-    required this.investimento,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(nome, style: const TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text(local, style: const TextStyle(color: Colors.grey)),
-          const SizedBox(height: 10),
-          Text(
-            descricao,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const Spacer(),
-          Text("Estágio: $estagio"),
-          Text("Financiamento: $investimento"),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber,
-              ),
-              child: const Text("Ver detalhes"),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
-
-// 🔻 MENU ITEM
-class MenuItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const MenuItem({
-    super.key,
-    required this.icon,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildInfo(String label, String valor) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: Colors.grey[700]),
-        const SizedBox(height: 4),
         Text(
           label,
-          style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+          style: const TextStyle(fontSize: 11, color: Color(0xFF888888)),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          valor,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF1A1A1A),
+          ),
         ),
       ],
     );
