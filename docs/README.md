@@ -35,6 +35,9 @@ Banco de dados: Firebase Firestore (Armazenamento dos dados)
 Ferramentas: Git, github, VisualStudio Code ou Android Studio
 
 ### Como executar o projeto
+No terminal, entra na pasta backend e de um npm install.
+Depois, entre na pasta mobile e de um flutter pub get.
+Se você não tiver o Node ou o Flutter configurado ainda, precisa baixar os instaladores oficiais primeiro!
 
 ### Licença
 Projeto acadêmico desenvolvido exclusivamente para a disciplina Projeto Integrador III – PUC-Campinas (2026).
