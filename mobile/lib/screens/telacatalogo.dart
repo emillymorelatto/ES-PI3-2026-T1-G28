@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
-
-class TelaCatalogo extends StatelessWidget {
+import 'teladetalhe.dart';
+ 
+class TelaCatalogo extends StatefulWidget {
   const TelaCatalogo({super.key});
-
+ 
+  @override
+  State<TelaCatalogo> createState() => _TelaCatalogoState();
+}
+ 
+class _TelaCatalogoState extends State<TelaCatalogo> {
+  String? _filtroEstagio;
+  
   static const _startups = [
     {
       'nome': 'HealthAI Sync',
@@ -16,6 +24,14 @@ class TelaCatalogo extends StatelessWidget {
           'Plataforma baseada em IA que unifica prontuários médicos e prevê riscos de doenças crônicas com 94% de precisão.',
       'estagio': 'Série A',
       'investimento': 'R\$ 15M',
+      'tokens': '1.500.000',
+      'valuation': 'R\$ 90M',
+      'retorno': '25% a.a.',
+      'socios': [
+        {'nome': 'Ana Lima (CEO)', 'percentual': 45},
+        {'nome': 'Pedro Souza (CTO)', 'percentual': 30},
+        {'nome': 'Investidores', 'percentual': 25},
+      ],
     },
     {
       'nome': 'AgroConnect',
@@ -29,6 +45,14 @@ class TelaCatalogo extends StatelessWidget {
           'Sensores IoT para monitoramento do solo e clima em tempo real, otimizando insumos agrícolas para pequenos produtores.',
       'estagio': 'Seed',
       'investimento': 'R\$ 2.5M',
+      'tokens': '500.000',
+      'valuation': 'R\$ 12M',
+      'retorno': '18% a.a.',
+      'socios': [
+        {'nome': 'Carlos Neto (CEO)', 'percentual': 55},
+        {'nome': 'Mariana Silva (COO)', 'percentual': 30},
+        {'nome': 'Anjos Investidores', 'percentual': 15},
+      ],
     },
     {
       'nome': 'PayFlow',
@@ -42,6 +66,15 @@ class TelaCatalogo extends StatelessWidget {
           'Solução completa de embedded finance para empresas oferecerem serviços bancários white-label em poucas semanas.',
       'estagio': 'Série B',
       'investimento': 'R\$ 45M',
+      'tokens': '4.500.000',
+      'valuation': 'R\$ 250M',
+      'retorno': '32% a.a.',
+      'socios': [
+        {'nome': 'Rafael Torres (CEO)', 'percentual': 35},
+        {'nome': 'Julia Campos (CFO)', 'percentual': 20},
+        {'nome': 'VC Fund Alpha', 'percentual': 30},
+        {'nome': 'Outros', 'percentual': 15},
+      ],
     },
     {
       'nome': 'LogisRoute',
@@ -55,6 +88,14 @@ class TelaCatalogo extends StatelessWidget {
           'Software de roteirização inteligente que reduz custos de entrega em até 30% usando algoritmos preditivos.',
       'estagio': 'Seed',
       'investimento': 'R\$ 4M',
+      'tokens': '800.000',
+      'valuation': 'R\$ 20M',
+      'retorno': '22% a.a.',
+      'socios': [
+        {'nome': 'Bruno Alves (CEO)', 'percentual': 60},
+        {'nome': 'Tatiane Melo (CTO)', 'percentual': 25},
+        {'nome': 'Aceleradora Inova', 'percentual': 15},
+      ],
     },
     {
       'nome': 'EduQuest',
@@ -68,6 +109,14 @@ class TelaCatalogo extends StatelessWidget {
           'Plataforma de gamificação e aprendizado adaptativo que aumenta o engajamento de alunos no ensino médio.',
       'estagio': 'Série A',
       'investimento': 'R\$ 12M',
+      'tokens': '1.200.000',
+      'valuation': 'R\$ 70M',
+      'retorno': '28% a.a.',
+      'socios': [
+        {'nome': 'Fernanda Rocha (CEO)', 'percentual': 50},
+        {'nome': 'Lucas Martins (CPO)', 'percentual': 25},
+        {'nome': 'Fundo Educa+', 'percentual': 25},
+      ],
     },
     {
       'nome': 'CyberGuard AI',
@@ -81,9 +130,21 @@ class TelaCatalogo extends StatelessWidget {
           'Detecção de ameaças cibernéticas em tempo real para PMEs, sem necessidade de hardware dedicado na infraestrutura.',
       'estagio': 'Pré-Seed',
       'investimento': 'R\$ 800k',
+      'tokens': '200.000',
+      'valuation': 'R\$ 5M',
+      'retorno': '15% a.a.',
+      'socios': [
+        {'nome': 'Diego Ferreira (CEO)', 'percentual': 70},
+        {'nome': 'Patricia Souza (CTO)', 'percentual': 30},
+      ],
     },
   ];
-
+ 
+  List<Map<String, dynamic>> get _startupsFiltradas {
+    if (_filtroEstagio == null) return _startups;
+    return _startups.where((s) => s['estagio'] == _filtroEstagio).toList();
+  }
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,7 +159,6 @@ class TelaCatalogo extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Título
                     const Text(
                       'Catálogo de Startups',
                       style: TextStyle(
@@ -117,8 +177,7 @@ class TelaCatalogo extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-
-                    // Busca
+ 
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -138,25 +197,46 @@ class TelaCatalogo extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-
-                    // Filtros
-                    Row(
-                      children: [
-                        _buildFiltro(Icons.tune, 'Setor'),
-                        const SizedBox(width: 8),
-                        _buildFiltro(Icons.trending_up, 'Estágio'),
-                        const SizedBox(width: 8),
-                        _buildFiltro(Icons.location_on_outlined,
-                            'Localização'),
-                      ],
+                    const SizedBox(height: 14),
+ 
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildChipFiltro('Todos', null),
+                          const SizedBox(width: 8),
+                          _buildChipFiltro('Pré-Seed', 'Pré-Seed'),
+                          const SizedBox(width: 8),
+                          _buildChipFiltro('Seed', 'Seed'),
+                          const SizedBox(width: 8),
+                          _buildChipFiltro('Série A', 'Série A'),
+                          const SizedBox(width: 8),
+                          _buildChipFiltro('Série B', 'Série B'),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 20),
-
-                    // Cards — lista vertical (melhor para mobile)
-                    ..._startups.map((s) => Padding(
+                    const SizedBox(height: 6),
+ 
+                    Text(
+                      '${_startupsFiltradas.length} startup(s) encontrada(s)',
+                      style: const TextStyle(
+                          fontSize: 12, color: Color(0xFF888888)),
+                    ),
+                    const SizedBox(height: 12),
+ 
+                    ..._startupsFiltradas.map((s) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),
-                          child: _StartupCard(startup: s),
+                          child: _StartupCard(
+                            startup: s,
+                            onVerDetalhes: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => TelaDetalhe(startup: s),
+                                ),
+                              );
+                            },
+                          ),
                         )),
                   ],
                 ),
@@ -168,7 +248,39 @@ class TelaCatalogo extends StatelessWidget {
       ),
     );
   }
-
+  
+  Widget _buildChipFiltro(String label, String? valor) {
+    final selecionado = _filtroEstagio == valor;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _filtroEstagio = valor;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: selecionado ? const Color(0xFFE67E22) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selecionado
+                ? const Color(0xFFE67E22)
+                : const Color(0xFFDDDDDD),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: selecionado ? Colors.white : const Color(0xFF555555),
+          ),
+        ),
+      ),
+    );
+  }
+ 
   Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -199,31 +311,7 @@ class TelaCatalogo extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildFiltro(IconData icon, String texto) {
-    return Expanded(
-      child: OutlinedButton.icon(
-        onPressed: () {},
-        icon: Icon(icon, size: 14, color: const Color(0xFF555555)),
-        label: Text(
-          texto,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Color(0xFF555555),
-          ),
-        ),
-        style: OutlinedButton.styleFrom(
-          backgroundColor: Colors.white,
-          side: const BorderSide(color: Color(0xFFDDDDDD)),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-      ),
-    );
-  }
-
+ 
   Widget _buildBottomNav(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
@@ -254,8 +342,7 @@ class TelaCatalogo extends StatelessWidget {
                     Icons.account_balance_wallet_rounded, 'Carteira', false),
               ),
               _buildNavItem(Icons.menu_book_outlined, 'Aprender', false),
-              _buildNavItem(
-                  Icons.monetization_on_outlined, 'Investir', true),
+              _buildNavItem(Icons.monetization_on_outlined, 'Investir', true),
               _buildNavItem(Icons.bar_chart_rounded, 'Gráficos', false),
             ],
           ),
@@ -263,10 +350,9 @@ class TelaCatalogo extends StatelessWidget {
       ),
     );
   }
-
+ 
   Widget _buildNavItem(IconData icon, String label, bool ativo) {
-    final color =
-        ativo ? const Color(0xFFE67E22) : const Color(0xFF999999);
+    final color = ativo ? const Color(0xFFE67E22) : const Color(0xFF999999);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -284,13 +370,16 @@ class TelaCatalogo extends StatelessWidget {
     );
   }
 }
-
-// ── Card de Startup ───────────────────────────────────────────────────────────
+ 
 class _StartupCard extends StatelessWidget {
   final Map<String, dynamic> startup;
-
-  const _StartupCard({required this.startup});
-
+  final VoidCallback onVerDetalhes;
+ 
+  const _StartupCard({
+    required this.startup,
+    required this.onVerDetalhes,
+  });
+ 
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -309,7 +398,6 @@ class _StartupCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Linha do topo: ícone + nome + badge setor
           Row(
             children: [
               Container(
@@ -355,10 +443,9 @@ class _StartupCard extends StatelessWidget {
                   ],
                 ),
               ),
-              // Badge setor
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: startup['corSetor'] as Color,
                   borderRadius: BorderRadius.circular(6),
@@ -375,8 +462,6 @@ class _StartupCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-
-          // Descrição
           Text(
             startup['descricao'] as String,
             style: const TextStyle(
@@ -386,23 +471,18 @@ class _StartupCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-
-          // Estágio e Financiamento
           Row(
             children: [
               _buildInfo('Estágio', startup['estagio'] as String),
               const SizedBox(width: 24),
-              _buildInfo(
-                  'Financiamento', startup['investimento'] as String),
+              _buildInfo('Financiamento', startup['investimento'] as String),
             ],
           ),
           const SizedBox(height: 12),
-
-          // Botão
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: onVerDetalhes,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFE67E22),
                 foregroundColor: Colors.white,
@@ -417,8 +497,8 @@ class _StartupCard extends StatelessWidget {
                 children: [
                   Text(
                     'Ver detalhes',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600, fontSize: 14),
+                    style:
+                        TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                   ),
                   SizedBox(width: 6),
                   Icon(Icons.arrow_forward, size: 16),
@@ -430,7 +510,7 @@ class _StartupCard extends StatelessWidget {
       ),
     );
   }
-
+ 
   Widget _buildInfo(String label, String valor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
