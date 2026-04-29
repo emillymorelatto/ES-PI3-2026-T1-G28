@@ -1,89 +1,74 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+//import 'telaDetalhe.dart';
 
-class TelaCatalogo extends StatelessWidget {
+class Startup {
+  final String name;
+  final String shortDescription;
+  final String stage;
+  final List<String> tags;
+
+  Startup({
+    required this.name,
+    required this.shortDescription,
+    required this.stage,
+    required this.tags,
+  });
+
+  factory Startup.fromMap(Map<String, dynamic> map) {
+    return Startup(
+      name: map['name'] as String,
+      shortDescription: map['shortDescription'] as String,
+      stage: map['stage'] as String,
+      tags: List<String>.from(map['tags'] ?? []),
+    );
+  }
+}
+
+class TelaCatalogo extends StatefulWidget {
   const TelaCatalogo({super.key});
+ 
+  @override
+  State<TelaCatalogo> createState() => _TelaCatalogoState();
+}
+ 
+class _TelaCatalogoState extends State<TelaCatalogo> {
+  String? _filtroEstagio;
+  String _search = '';
+  List<Startup> _startups = [];
+  bool _isLoading = false;
+  String? _erro;
 
-  static const _startups = [
-    {
-      'nome': 'HealthAI Sync',
-      'local': 'São Paulo, SP',
-      'setor': 'Healthtech',
-      'corSetor': Color(0xFFE8F5E9),
-      'corSetorTexto': Color(0xFF2E7D32),
-      'icone': Icons.favorite_outline,
-      'corIcone': Color(0xFF43A047),
-      'descricao':
-          'Plataforma baseada em IA que unifica prontuários médicos e prevê riscos de doenças crônicas com 94% de precisão.',
-      'estagio': 'Série A',
-      'investimento': 'R\$ 15M',
-    },
-    {
-      'nome': 'AgroConnect',
-      'local': 'Ribeirão Preto, SP',
-      'setor': 'Agtech',
-      'corSetor': Color(0xFFF1F8E9),
-      'corSetorTexto': Color(0xFF558B2F),
-      'icone': Icons.eco_outlined,
-      'corIcone': Color(0xFF7CB342),
-      'descricao':
-          'Sensores IoT para monitoramento do solo e clima em tempo real, otimizando insumos agrícolas para pequenos produtores.',
-      'estagio': 'Seed',
-      'investimento': 'R\$ 2.5M',
-    },
-    {
-      'nome': 'PayFlow',
-      'local': 'Curitiba, PR',
-      'setor': 'Fintech',
-      'corSetor': Color(0xFFE8EAF6),
-      'corSetorTexto': Color(0xFF3949AB),
-      'icone': Icons.credit_card_outlined,
-      'corIcone': Color(0xFF5C6BC0),
-      'descricao':
-          'Solução completa de embedded finance para empresas oferecerem serviços bancários white-label em poucas semanas.',
-      'estagio': 'Série B',
-      'investimento': 'R\$ 45M',
-    },
-    {
-      'nome': 'LogisRoute',
-      'local': 'Campinas, SP',
-      'setor': 'Logtech',
-      'corSetor': Color(0xFFFFF8E1),
-      'corSetorTexto': Color(0xFFF57F17),
-      'icone': Icons.local_shipping_outlined,
-      'corIcone': Color(0xFFFFB300),
-      'descricao':
-          'Software de roteirização inteligente que reduz custos de entrega em até 30% usando algoritmos preditivos.',
-      'estagio': 'Seed',
-      'investimento': 'R\$ 4M',
-    },
-    {
-      'nome': 'EduQuest',
-      'local': 'Florianópolis, SC',
-      'setor': 'Edtech',
-      'corSetor': Color(0xFFFCE4EC),
-      'corSetorTexto': Color(0xFFC62828),
-      'icone': Icons.school_outlined,
-      'corIcone': Color(0xFFE53935),
-      'descricao':
-          'Plataforma de gamificação e aprendizado adaptativo que aumenta o engajamento de alunos no ensino médio.',
-      'estagio': 'Série A',
-      'investimento': 'R\$ 12M',
-    },
-    {
-      'nome': 'CyberGuard AI',
-      'local': 'Rio de Janeiro, RJ',
-      'setor': 'Security',
-      'corSetor': Color(0xFFEDE7F6),
-      'corSetorTexto': Color(0xFF4527A0),
-      'icone': Icons.shield_outlined,
-      'corIcone': Color(0xFF7E57C2),
-      'descricao':
-          'Detecção de ameaças cibernéticas em tempo real para PMEs, sem necessidade de hardware dedicado na infraestrutura.',
-      'estagio': 'Pré-Seed',
-      'investimento': 'R\$ 800k',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _carregarStartups();
+  }
 
+  Future<void> _carregarStartups() async {
+    setState(() { _isLoading = true; _erro = null; });
+    try {
+      final callable = FirebaseFunctions.instance
+          .httpsCallable('listStartups');
+
+      final result = await callable.call({
+        if (_filtroEstagio != null) 'stage': _filtroEstagio,
+        if (_search.isNotEmpty) 'search': _search,
+      });
+
+      final data = result.data as Map<String, dynamic>;
+      final lista = (data['data'] as List)
+          .map((e) => Startup.fromMap(Map<String, dynamic>.from(e)))
+          .toList();
+
+      setState(() { _startups = lista; });
+    } on FirebaseFunctionsException catch (e) {
+      setState(() { _erro = e.message; });
+    } finally {
+      setState(() { _isLoading = false; });
+    }
+  }
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,7 +83,6 @@ class TelaCatalogo extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Título
                     const Text(
                       'Catálogo de Startups',
                       style: TextStyle(
@@ -117,8 +101,7 @@ class TelaCatalogo extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-
-                    // Busca
+ 
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -138,26 +121,54 @@ class TelaCatalogo extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-
-                    // Filtros
-                    Row(
-                      children: [
-                        _buildFiltro(Icons.tune, 'Setor'),
-                        const SizedBox(width: 8),
-                        _buildFiltro(Icons.trending_up, 'Estágio'),
-                        const SizedBox(width: 8),
-                        _buildFiltro(Icons.location_on_outlined,
-                            'Localização'),
-                      ],
+                    const SizedBox(height: 14),
+ 
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildChipFiltro('Todos', null),
+                          const SizedBox(width: 8),
+                          _buildChipFiltro('Pré-Seed', 'Pré-Seed'),
+                          const SizedBox(width: 8),
+                          _buildChipFiltro('Seed', 'Seed'),
+                          const SizedBox(width: 8),
+                          _buildChipFiltro('Série A', 'Série A'),
+                          const SizedBox(width: 8),
+                          _buildChipFiltro('Série B', 'Série B'),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 6),
+ 
+                    Text(
+                      '${_startups.length} startup(s) encontrada(s)',
+                      style: const TextStyle(
+                          fontSize: 12, color: Color(0xFF888888)),
+                    ),
+                    const SizedBox(height: 12),
 
-                    // Cards — lista vertical (melhor para mobile)
-                    ..._startups.map((s) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: _StartupCard(startup: s),
-                        )),
+                    if (_isLoading)
+                      const Center(child: CircularProgressIndicator())
+                    else if (_erro != null)
+                      Text('Erro: $_erro', style: const TextStyle(color: Colors.red))
+                    else
+                      ..._startups.map((s) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _StartupCard(
+                              startup: s,
+                              onVerDetalhes: () {
+                                /*
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => TelaDetalhe(startup: s),
+                                  ),
+                                );
+                                */
+                              },
+                            ),
+                          )),
                   ],
                 ),
               ),
@@ -168,7 +179,39 @@ class TelaCatalogo extends StatelessWidget {
       ),
     );
   }
-
+  
+  Widget _buildChipFiltro(String label, String? valor) {
+    final selecionado = _filtroEstagio == valor;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _filtroEstagio = valor;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: selecionado ? const Color(0xFFE67E22) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selecionado
+                ? const Color(0xFFE67E22)
+                : const Color(0xFFDDDDDD),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: selecionado ? Colors.white : const Color(0xFF555555),
+          ),
+        ),
+      ),
+    );
+  }
+ 
   Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -199,31 +242,7 @@ class TelaCatalogo extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildFiltro(IconData icon, String texto) {
-    return Expanded(
-      child: OutlinedButton.icon(
-        onPressed: () {},
-        icon: Icon(icon, size: 14, color: const Color(0xFF555555)),
-        label: Text(
-          texto,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Color(0xFF555555),
-          ),
-        ),
-        style: OutlinedButton.styleFrom(
-          backgroundColor: Colors.white,
-          side: const BorderSide(color: Color(0xFFDDDDDD)),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-      ),
-    );
-  }
-
+ 
   Widget _buildBottomNav(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
@@ -254,8 +273,7 @@ class TelaCatalogo extends StatelessWidget {
                     Icons.account_balance_wallet_rounded, 'Carteira', false),
               ),
               _buildNavItem(Icons.menu_book_outlined, 'Aprender', false),
-              _buildNavItem(
-                  Icons.monetization_on_outlined, 'Investir', true),
+              _buildNavItem(Icons.monetization_on_outlined, 'Investir', true),
               _buildNavItem(Icons.bar_chart_rounded, 'Gráficos', false),
             ],
           ),
@@ -263,10 +281,9 @@ class TelaCatalogo extends StatelessWidget {
       ),
     );
   }
-
+ 
   Widget _buildNavItem(IconData icon, String label, bool ativo) {
-    final color =
-        ativo ? const Color(0xFFE67E22) : const Color(0xFF999999);
+    final color = ativo ? const Color(0xFFE67E22) : const Color(0xFF999999);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -284,13 +301,16 @@ class TelaCatalogo extends StatelessWidget {
     );
   }
 }
-
-// ── Card de Startup ───────────────────────────────────────────────────────────
+ 
 class _StartupCard extends StatelessWidget {
-  final Map<String, dynamic> startup;
-
-  const _StartupCard({required this.startup});
-
+  final Startup startup;
+  final VoidCallback onVerDetalhes;
+ 
+  const _StartupCard({
+    required this.startup,
+    required this.onVerDetalhes,
+  });
+ 
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -309,20 +329,14 @@ class _StartupCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Linha do topo: ícone + nome + badge setor
           Row(
             children: [
               Container(
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: startup['corSetor'] as Color,
+                  color: const Color(0xFFFFF3E0),
                   borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  startup['icone'] as IconData,
-                  color: startup['corIcone'] as Color,
-                  size: 20,
                 ),
               ),
               const SizedBox(width: 10),
@@ -331,54 +345,33 @@ class _StartupCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      startup['nome'] as String,
+                      startup.name,
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 15,
                         color: Color(0xFF1A1A1A),
                       ),
                     ),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on_outlined,
-                            size: 12, color: Color(0xFF888888)),
-                        const SizedBox(width: 2),
-                        Text(
-                          startup['local'] as String,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF888888),
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
-              // Badge setor
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: startup['corSetor'] as Color,
-                  borderRadius: BorderRadius.circular(6),
-                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Text(
-                  startup['setor'] as String,
+                  startup.stage,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: startup['corSetorTexto'] as Color,
+                    color: const Color(0xFFFFF3E0),
                   ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 10),
-
-          // Descrição
           Text(
-            startup['descricao'] as String,
+            startup.shortDescription,
             style: const TextStyle(
               fontSize: 13,
               color: Color(0xFF555555),
@@ -386,23 +379,18 @@ class _StartupCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-
-          // Estágio e Financiamento
           Row(
             children: [
-              _buildInfo('Estágio', startup['estagio'] as String),
+              _buildInfo('Estágio', startup.stage),
               const SizedBox(width: 24),
-              _buildInfo(
-                  'Financiamento', startup['investimento'] as String),
+              _buildInfo('Descrição', startup.shortDescription),
             ],
           ),
           const SizedBox(height: 12),
-
-          // Botão
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: onVerDetalhes,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFE67E22),
                 foregroundColor: Colors.white,
@@ -417,8 +405,8 @@ class _StartupCard extends StatelessWidget {
                 children: [
                   Text(
                     'Ver detalhes',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600, fontSize: 14),
+                    style:
+                        TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                   ),
                   SizedBox(width: 6),
                   Icon(Icons.arrow_forward, size: 16),
@@ -430,7 +418,7 @@ class _StartupCard extends StatelessWidget {
       ),
     );
   }
-
+ 
   Widget _buildInfo(String label, String valor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
- 
+import 'telaCatalogo.dart';
+
 class TelaDetalhe extends StatelessWidget {
-  final Map<String, dynamic> startup;
+  final Startup startup;
  
   const TelaDetalhe({super.key, required this.startup});
  
@@ -77,13 +78,8 @@ class TelaDetalhe extends StatelessWidget {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: startup['corSetor'] as Color,
+                  color: const Color(0xFFFFF3E0),
                   borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(
-                  startup['icone'] as IconData,
-                  color: startup['corIcone'] as Color,
-                  size: 28,
                 ),
               ),
               const SizedBox(width: 14),
@@ -92,7 +88,7 @@ class TelaDetalhe extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      startup['nome'] as String,
+                      startup.name,
                       style: const TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 20,
@@ -100,18 +96,6 @@ class TelaDetalhe extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on_outlined,
-                            size: 13, color: Color(0xFF888888)),
-                        const SizedBox(width: 2),
-                        Text(
-                          startup['local'] as String,
-                          style: const TextStyle(
-                              fontSize: 13, color: Color(0xFF888888)),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -127,7 +111,7 @@ class TelaDetalhe extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               _buildBadge(
-                startup['estagio'] as String,
+                startup.stage,
                 const Color(0xFFFFF3E0),
                 const Color(0xFFE67E22),
               ),
@@ -148,7 +132,7 @@ class TelaDetalhe extends StatelessWidget {
           _buildSectionTitle(Icons.description_outlined, 'Sobre o Projeto'),
           const SizedBox(height: 12),
           Text(
-            startup['descricao'] as String,
+            startup.shortDescription,
             style: const TextStyle(
               fontSize: 14,
               color: Color(0xFF444444),

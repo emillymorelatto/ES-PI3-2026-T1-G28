@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/screens/telacatalogo.dart';
+import 'telaCatalogo.dart';
 
 class TelaCarteira extends StatelessWidget {
   const TelaCarteira({super.key});
