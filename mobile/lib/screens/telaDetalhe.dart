@@ -64,7 +64,7 @@ class TelaDetalhe extends StatelessWidget {
     );
   }
  
-  Widget _buildIdentidade() {
+ Widget _buildIdentidade() {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: _cardDecoration(),
