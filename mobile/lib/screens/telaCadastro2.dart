@@ -1,7 +1,106 @@
-import 'package:flutter/material.dart';
+// Murilo Moraes
+// Passo 2 do cadastro: coleta email, telefone e senha, e registra no Firebase
 
-class TelaCadastro2 extends StatelessWidget {
-  const TelaCadastro2({super.key});
+import 'package:flutter/material.dart';
+import '../services/servico_autenticacao.dart';
+import 'telacarteira.dart';
+import 'telalogin.dart';
+
+class TelaCadastro2 extends StatefulWidget {
+  // Dados recebidos do passo 1
+  final String nomeCompleto;
+  final String cpf;
+
+  const TelaCadastro2({
+    super.key,
+    required this.nomeCompleto,
+    required this.cpf,
+  });
+
+  @override
+  State<TelaCadastro2> createState() => _TelaCadastro2State();
+}
+
+class _TelaCadastro2State extends State<TelaCadastro2> {
+  final _controladorEmail = TextEditingController();
+  final _controladorTelefone = TextEditingController();
+  final _controladorSenha = TextEditingController();
+  final _controladorConfirmarSenha = TextEditingController();
+
+  final _servicoAuth = ServicoAutenticacao();
+
+  bool _carregando = false;
+  bool _senhaVisivel = false;
+  bool _confirmarSenhaVisivel = false;
+  String? _mensagemErro;
+
+  @override
+  void dispose() {
+    _controladorEmail.dispose();
+    _controladorTelefone.dispose();
+    _controladorSenha.dispose();
+    _controladorConfirmarSenha.dispose();
+    super.dispose();
+  }
+
+  // Valida campos e realiza o cadastro no Firebase
+  Future<void> _realizarCadastro() async {
+    final email = _controladorEmail.text.trim();
+    final telefone = _controladorTelefone.text.trim();
+    final senha = _controladorSenha.text;
+    final confirmarSenha = _controladorConfirmarSenha.text;
+
+    // Validações dos campos
+    if (email.isEmpty || telefone.isEmpty || senha.isEmpty || confirmarSenha.isEmpty) {
+      setState(() => _mensagemErro = 'Preencha todos os campos.');
+      return;
+    }
+
+    if (!email.contains('@')) {
+      setState(() => _mensagemErro = 'E-mail inválido.');
+      return;
+    }
+
+    if (senha.length < 6) {
+      setState(() => _mensagemErro = 'A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+
+    if (senha != confirmarSenha) {
+      setState(() => _mensagemErro = 'As senhas não coincidem.');
+      return;
+    }
+
+    setState(() {
+      _carregando = true;
+      _mensagemErro = null;
+    });
+
+    // Chama o serviço de autenticação passando todos os dados
+    final erro = await _servicoAuth.cadastrarUsuario(
+      nomeCompleto: widget.nomeCompleto,
+      email: email,
+      cpf: widget.cpf,
+      telefone: telefone,
+      senha: senha,
+    );
+
+    if (!mounted) return;
+
+    if (erro != null) {
+      setState(() {
+        _mensagemErro = erro;
+        _carregando = false;
+      });
+    } else {
+      // Cadastro bem-sucedido: vai direto para a carteira
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const TelaCarteira()),
+        (route) => false,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +123,6 @@ class TelaCadastro2 extends StatelessWidget {
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                textAlign: TextAlign.left,
                 'PASSO 2 DE 2',
                 style: TextStyle(
                   color: Color(0xFFFFC153),
@@ -35,22 +133,16 @@ class TelaCadastro2 extends StatelessWidget {
               ),
             ),
 
-            // Logo Texto
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                textAlign: TextAlign.left,
                 'Criar conta',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                ),
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
               ),
             ),
-
+            const SizedBox(height: 6),
             const Text(
-              'Preencha seus dados pessoais para iniciar o cadastro na Mescla Invest',
+              'Quase lá! Preencha seus dados de acesso.',
               style: TextStyle(color: Colors.grey, fontSize: 14),
             ),
             const SizedBox(height: 40),
@@ -58,14 +150,16 @@ class TelaCadastro2 extends StatelessWidget {
             // Campo E-mail
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text("E-mail", style: TextStyle(fontWeight: FontWeight.w500)),
+              child: Text('E-mail', style: TextStyle(fontWeight: FontWeight.w500)),
             ),
             const SizedBox(height: 8),
             TextField(
+              controller: _controladorEmail,
+              keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
-                hintText: 'Digite o seu melhor e-mail!',
+                hintText: 'Digite o seu melhor e-mail',
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
             ),
             const SizedBox(height: 20),
@@ -73,14 +167,16 @@ class TelaCadastro2 extends StatelessWidget {
             // Campo Telefone
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text("Telefone", style: TextStyle(fontWeight: FontWeight.w500)),
+              child: Text('Telefone', style: TextStyle(fontWeight: FontWeight.w500)),
             ),
             const SizedBox(height: 8),
             TextField(
+              controller: _controladorTelefone,
+              keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                 hintText: '(00) 00000-0000',
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
             ),
             const SizedBox(height: 20),
@@ -88,59 +184,111 @@ class TelaCadastro2 extends StatelessWidget {
             // Campo Senha
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text("Senha", style: TextStyle(fontWeight: FontWeight.w500)),
+              child: Text('Senha', style: TextStyle(fontWeight: FontWeight.w500)),
             ),
             const SizedBox(height: 8),
             TextField(
-              obscureText: true,
+              controller: _controladorSenha,
+              obscureText: !_senhaVisivel,
               decoration: InputDecoration(
-                hintText: 'Crie sua senha',
-                suffixIcon: const Icon(Icons.visibility_off_outlined),
+                hintText: 'Mínimo 6 caracteres',
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _senhaVisivel ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                  ),
+                  onPressed: () => setState(() => _senhaVisivel = !_senhaVisivel),
+                ),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
             ),
             const SizedBox(height: 20),
 
-            // Campo Confirma Senha
+            // Campo Confirmar Senha
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text("Confirmar Senha", style: TextStyle(fontWeight: FontWeight.w500)),
+              child: Text('Confirmar Senha', style: TextStyle(fontWeight: FontWeight.w500)),
             ),
             const SizedBox(height: 8),
             TextField(
-              obscureText: true,
+              controller: _controladorConfirmarSenha,
+              obscureText: !_confirmarSenhaVisivel,
               decoration: InputDecoration(
                 hintText: 'Repita sua senha',
-                suffixIcon: const Icon(Icons.visibility_off_outlined),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _confirmarSenhaVisivel ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                  ),
+                  onPressed: () => setState(() => _confirmarSenhaVisivel = !_confirmarSenhaVisivel),
+                ),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
             ),
-            const SizedBox(height: 20),
 
-            const SizedBox(height: 70),
+            // Mensagem de erro
+            if (_mensagemErro != null) ...[
+              const SizedBox(height: 10),
+              Text(
+                _mensagemErro!,
+                style: const TextStyle(color: Colors.red, fontSize: 13),
+              ),
+            ],
+
+            const SizedBox(height: 40),
 
             // Botão Cadastrar
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: _carregando ? null : _realizarCadastro,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFC153),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Cadastrar',
-                  style: TextStyle(color: Colors.black, fontSize: 18),
-                ),
+                child: _carregando
+                    ? const SizedBox(
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.black,
+                        ),
+                      )
+                    : const Text(
+                        'Cadastrar',
+                        style: TextStyle(color: Colors.black, fontSize: 18),
+                      ),
               ),
             ),
 
-            const SizedBox(height: 80),
+            const SizedBox(height: 24),
+
+            // Link login
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('Já tem uma conta? '),
+                GestureDetector(
+                  onTap: () => Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const TelaLogin()),
+                    (route) => false,
+                  ),
+                  child: const Text(
+                    'Entrar',
+                    style: TextStyle(
+                      color: Color(0xFFFFC153),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 40),
           ],
         ),
       ),
