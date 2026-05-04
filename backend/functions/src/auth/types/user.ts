@@ -1,5 +1,7 @@
-//autor: Emilly Morelatto
-export interface User {
-  email: string
-  password: string
+// Emilly Morelatto
+export interface UserProfile {
+    name: string;
+    cpf: string;
+    phone: string | null;
+    email: string | null;
 }

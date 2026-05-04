@@ -1,3 +1,4 @@
+// Murilo Moraes
 import { HttpsError, onCall } from "firebase-functions/https";
 import { seedDemoStartups } from "../repositories/startupRepository";
 import { normalizeString } from "../shared/validation";

@@ -1,6 +1,7 @@
+// Rodrigo Duarte 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-//import 'telaDetalhe.dart';
 
 class Startup {
   final String name;
@@ -25,16 +26,22 @@ class Startup {
   }
 }
 
+const _stageLabels = {
+  'nova': 'Nova',
+  'em_operacao': 'Em Operação',
+  'em_expansao': 'Em Expansão',
+};
+
 class TelaCatalogo extends StatefulWidget {
   const TelaCatalogo({super.key});
- 
+
   @override
   State<TelaCatalogo> createState() => _TelaCatalogoState();
 }
- 
+
 class _TelaCatalogoState extends State<TelaCatalogo> {
   String? _filtroEstagio;
-  String _search = '';
+  final _searchController = TextEditingController();
   List<Startup> _startups = [];
   bool _isLoading = false;
   String? _erro;
@@ -45,15 +52,24 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
     _carregarStartups();
   }
 
-  Future<void> _carregarStartups() async {
-    setState(() { _isLoading = true; _erro = null; });
-    try {
-      final callable = FirebaseFunctions.instance
-          .httpsCallable('listStartups');
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
-      final result = await callable.call({
+  Future<void> _carregarStartups() async {
+    setState(() {
+      _isLoading = true;
+      _erro = null;
+    });
+    try {
+      final result = await FirebaseFunctions.instance
+          .httpsCallable('listStartups')
+          .call({
         if (_filtroEstagio != null) 'stage': _filtroEstagio,
-        if (_search.isNotEmpty) 'search': _search,
+        if (_searchController.text.trim().isNotEmpty)
+          'search': _searchController.text.trim(),
       });
 
       final data = result.data as Map<String, dynamic>;
@@ -61,14 +77,38 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
           .map((e) => Startup.fromMap(Map<String, dynamic>.from(e)))
           .toList();
 
-      setState(() { _startups = lista; });
+      // Auto-seed em modo debug quando o catálogo está vazio
+      if (lista.isEmpty && kDebugMode) {
+        await _seedERecarregar();
+        return;
+      }
+
+      setState(() => _startups = lista);
     } on FirebaseFunctionsException catch (e) {
-      setState(() { _erro = e.message; });
+      setState(() => _erro = e.message);
+    } catch (e) {
+      setState(() => _erro = e.toString());
     } finally {
-      setState(() { _isLoading = false; });
+      if (mounted) setState(() => _isLoading = false);
     }
   }
- 
+
+  Future<void> _seedERecarregar() async {
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable('seedStartupCatalog')
+          .call();
+      await _carregarStartups();
+    } on FirebaseFunctionsException catch (e) {
+      setState(() => _erro = 'Erro ao popular catálogo: ${e.message}');
+    }
+  }
+
+  void _aplicarFiltro(String? estagio) {
+    setState(() => _filtroEstagio = estagio);
+    _carregarStartups();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,73 +141,67 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
                       ),
                     ),
                     const SizedBox(height: 16),
- 
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: const Color(0xFFE0E0E0)),
                       ),
-                      child: const TextField(
+                      child: TextField(
+                        controller: _searchController,
+                        onSubmitted: (_) => _carregarStartups(),
                         decoration: InputDecoration(
                           hintText: 'Buscar por nome ou palavra-chave...',
-                          hintStyle: TextStyle(
+                          hintStyle: const TextStyle(
                               fontSize: 13, color: Color(0xFFAAAAAA)),
-                          prefixIcon: Icon(Icons.search,
+                          prefixIcon: const Icon(Icons.search,
                               color: Color(0xFFAAAAAA), size: 20),
+                          suffixIcon: _searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear, size: 18),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    _carregarStartups();
+                                  },
+                                )
+                              : null,
                           border: InputBorder.none,
                           contentPadding:
-                              EdgeInsets.symmetric(vertical: 12),
+                              const EdgeInsets.symmetric(vertical: 12),
                         ),
                       ),
                     ),
                     const SizedBox(height: 14),
- 
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
                           _buildChipFiltro('Todos', null),
                           const SizedBox(width: 8),
-                          _buildChipFiltro('Pré-Seed', 'Pré-Seed'),
+                          _buildChipFiltro('Nova', 'nova'),
                           const SizedBox(width: 8),
-                          _buildChipFiltro('Seed', 'Seed'),
+                          _buildChipFiltro('Em Operação', 'em_operacao'),
                           const SizedBox(width: 8),
-                          _buildChipFiltro('Série A', 'Série A'),
-                          const SizedBox(width: 8),
-                          _buildChipFiltro('Série B', 'Série B'),
+                          _buildChipFiltro('Em Expansão', 'em_expansao'),
                         ],
                       ),
                     ),
                     const SizedBox(height: 6),
- 
                     Text(
                       '${_startups.length} startup(s) encontrada(s)',
                       style: const TextStyle(
                           fontSize: 12, color: Color(0xFF888888)),
                     ),
                     const SizedBox(height: 12),
-
                     if (_isLoading)
                       const Center(child: CircularProgressIndicator())
                     else if (_erro != null)
-                      Text('Erro: $_erro', style: const TextStyle(color: Colors.red))
+                      Text('Erro: $_erro',
+                          style: const TextStyle(color: Colors.red))
                     else
                       ..._startups.map((s) => Padding(
                             padding: const EdgeInsets.only(bottom: 12),
-                            child: _StartupCard(
-                              startup: s,
-                              onVerDetalhes: () {
-                                /*
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => TelaDetalhe(startup: s),
-                                  ),
-                                );
-                                */
-                              },
-                            ),
+                            child: _StartupCard(startup: s),
                           )),
                   ],
                 ),
@@ -179,15 +213,11 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
       ),
     );
   }
-  
+
   Widget _buildChipFiltro(String label, String? valor) {
     final selecionado = _filtroEstagio == valor;
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          _filtroEstagio = valor;
-        });
-      },
+      onTap: () => _aplicarFiltro(valor),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -211,7 +241,7 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
       ),
     );
   }
- 
+
   Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -242,7 +272,7 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
       ),
     );
   }
- 
+
   Widget _buildBottomNav(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
@@ -281,7 +311,7 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
       ),
     );
   }
- 
+
   Widget _buildNavItem(IconData icon, String label, bool ativo) {
     final color = ativo ? const Color(0xFFE67E22) : const Color(0xFF999999);
     return Column(
@@ -301,18 +331,15 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
     );
   }
 }
- 
+
 class _StartupCard extends StatelessWidget {
   final Startup startup;
-  final VoidCallback onVerDetalhes;
- 
-  const _StartupCard({
-    required this.startup,
-    required this.onVerDetalhes,
-  });
- 
+
+  const _StartupCard({required this.startup});
+
   @override
   Widget build(BuildContext context) {
+    final stageLabel = _stageLabels[startup.stage] ?? startup.stage;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -338,32 +365,33 @@ class _StartupCard extends StatelessWidget {
                   color: const Color(0xFFFFF3E0),
                   borderRadius: BorderRadius.circular(10),
                 ),
+                child: const Icon(Icons.rocket_launch_outlined,
+                    color: Color(0xFFE67E22), size: 20),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      startup.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
-                        color: Color(0xFF1A1A1A),
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  startup.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: Color(0xFF1A1A1A),
+                  ),
                 ),
               ),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF3E0),
+                  borderRadius: BorderRadius.circular(6),
+                ),
                 child: Text(
-                  startup.stage,
-                  style: TextStyle(
+                  stageLabel,
+                  style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFFFFF3E0),
+                    color: Color(0xFFE67E22),
                   ),
                 ),
               ),
@@ -378,19 +406,33 @@ class _StartupCard extends StatelessWidget {
               height: 1.4,
             ),
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              _buildInfo('Estágio', startup.stage),
-              const SizedBox(width: 24),
-              _buildInfo('Descrição', startup.shortDescription),
-            ],
-          ),
+          if (startup.tags.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 6,
+              runSpacing: 4,
+              children: startup.tags
+                  .map((tag) => Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF0F0F0),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '#$tag',
+                          style: const TextStyle(
+                              fontSize: 11, color: Color(0xFF666666)),
+                        ),
+                      ))
+                  .toList(),
+            ),
+          ],
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: onVerDetalhes,
+              onPressed: () {},
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFE67E22),
                 foregroundColor: Colors.white,
@@ -405,8 +447,7 @@ class _StartupCard extends StatelessWidget {
                 children: [
                   Text(
                     'Ver detalhes',
-                    style:
-                        TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                   ),
                   SizedBox(width: 6),
                   Icon(Icons.arrow_forward, size: 16),
@@ -416,27 +457,6 @@ class _StartupCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
- 
-  Widget _buildInfo(String label, String valor) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 11, color: Color(0xFF888888)),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          valor,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF1A1A1A),
-          ),
-        ),
-      ],
     );
   }
 }

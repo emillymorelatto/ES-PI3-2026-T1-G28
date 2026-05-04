@@ -1,6 +1,4 @@
 // Murilo Moraes
-// Passo 1 do cadastro: coleta nome completo e CPF
-
 import 'package:flutter/material.dart';
 import 'telalogin.dart';
 import 'telaCadastro2.dart';
@@ -24,7 +22,6 @@ class _TelaCadastro1State extends State<TelaCadastro1> {
     super.dispose();
   }
 
-  // Valida os campos e avança para o passo 2
   void _avancarParaPasso2() {
     final nome = _controladorNome.text.trim();
     final cpf = _controladorCpf.text.trim();
@@ -33,20 +30,15 @@ class _TelaCadastro1State extends State<TelaCadastro1> {
       setState(() => _mensagemErro = 'Preencha todos os campos.');
       return;
     }
-
     if (cpf.replaceAll(RegExp(r'\D'), '').length != 11) {
       setState(() => _mensagemErro = 'CPF inválido. Informe os 11 dígitos.');
       return;
     }
 
-    // Navega para o passo 2 passando os dados coletados
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => TelaCadastro2(
-          nomeCompleto: nome,
-          cpf: cpf,
-        ),
+        builder: (_) => TelaCadastro2(nomeCompleto: nome, cpf: cpf),
       ),
     );
   }
@@ -58,36 +50,23 @@ class _TelaCadastro1State extends State<TelaCadastro1> {
       appBar: AppBar(
         backgroundColor: Colors.grey[200],
         elevation: 0,
-        title: const Text(
-          'CADASTRO',
-          style: TextStyle(color: Colors.grey, fontSize: 18),
-        ),
+        title: const Text('CADASTRO', style: TextStyle(color: Colors.grey, fontSize: 18)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 30.0),
         child: Column(
           children: [
             const SizedBox(height: 60),
-
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                'PASSO 1 DE 2',
-                style: TextStyle(
-                  color: Color(0xFFFFC153),
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                ),
-              ),
+              child: Text('PASSO 1 DE 2',
+                  style: TextStyle(color: Color(0xFFFFC153), fontSize: 14,
+                      fontWeight: FontWeight.bold, letterSpacing: 1.2)),
             ),
-
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                'Criar conta',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
+              child: Text('Criar conta',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 6),
             const Text(
@@ -95,8 +74,6 @@ class _TelaCadastro1State extends State<TelaCadastro1> {
               style: TextStyle(color: Colors.grey, fontSize: 14),
             ),
             const SizedBox(height: 40),
-
-            // Campo Nome Completo
             const Align(
               alignment: Alignment.centerLeft,
               child: Text('Nome Completo', style: TextStyle(fontWeight: FontWeight.w500)),
@@ -111,10 +88,7 @@ class _TelaCadastro1State extends State<TelaCadastro1> {
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
             ),
-
             const SizedBox(height: 20),
-
-            // Campo CPF
             const Align(
               alignment: Alignment.centerLeft,
               child: Text('CPF', style: TextStyle(fontWeight: FontWeight.w500)),
@@ -129,19 +103,11 @@ class _TelaCadastro1State extends State<TelaCadastro1> {
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
             ),
-
-            // Mensagem de erro
             if (_mensagemErro != null) ...[
               const SizedBox(height: 10),
-              Text(
-                _mensagemErro!,
-                style: const TextStyle(color: Colors.red, fontSize: 13),
-              ),
+              Text(_mensagemErro!, style: const TextStyle(color: Colors.red, fontSize: 13)),
             ],
-
             const SizedBox(height: 70),
-
-            // Botão Próximo
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -149,20 +115,13 @@ class _TelaCadastro1State extends State<TelaCadastro1> {
                 onPressed: _avancarParaPasso2,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFC153),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
-                child: const Text(
-                  'Próximo',
-                  style: TextStyle(color: Colors.black, fontSize: 18),
-                ),
+                child: const Text('Próximo',
+                    style: TextStyle(color: Colors.black, fontSize: 18)),
               ),
             ),
-
             const SizedBox(height: 40),
-
-            // Link login
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -172,13 +131,8 @@ class _TelaCadastro1State extends State<TelaCadastro1> {
                     context,
                     MaterialPageRoute(builder: (_) => const TelaLogin()),
                   ),
-                  child: const Text(
-                    'Entrar',
-                    style: TextStyle(
-                      color: Color(0xFFFFC153),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: const Text('Entrar',
+                      style: TextStyle(color: Color(0xFFFFC153), fontWeight: FontWeight.bold)),
                 ),
               ],
             ),

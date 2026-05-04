@@ -1,3 +1,4 @@
+// Murilo Moraes
 import { HttpsError, onCall } from "firebase-functions/https";
 import { allowedStages } from "../shared/constants";
 import { requireAuthenticatedUser } from "../shared/auth";
