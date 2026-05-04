@@ -1,8 +1,9 @@
-//autor: Emilly Morelatto
-import * as admin from "firebase-admin"
+// Emilly Morelatto
+import {getApps, initializeApp} from "firebase-admin/app";
+import {getFirestore} from "firebase-admin/firestore";
 
-// Inicializa Firebase Admin SDK
-admin.initializeApp()
+if (getApps().length === 0) {
+    initializeApp();
+}
 
-// Exporta Firestore para uso global
-export const db = admin.firestore()
+export const db = getFirestore();

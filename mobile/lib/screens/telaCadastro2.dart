@@ -1,21 +1,14 @@
 // Murilo Moraes
-// Passo 2 do cadastro: coleta email, telefone e senha, e registra no Firebase
-
 import 'package:flutter/material.dart';
 import '../services/servico_autenticacao.dart';
 import 'telacarteira.dart';
 import 'telalogin.dart';
 
 class TelaCadastro2 extends StatefulWidget {
-  // Dados recebidos do passo 1
   final String nomeCompleto;
   final String cpf;
 
-  const TelaCadastro2({
-    super.key,
-    required this.nomeCompleto,
-    required this.cpf,
-  });
+  const TelaCadastro2({super.key, required this.nomeCompleto, required this.cpf});
 
   @override
   State<TelaCadastro2> createState() => _TelaCadastro2State();
@@ -26,7 +19,6 @@ class _TelaCadastro2State extends State<TelaCadastro2> {
   final _controladorTelefone = TextEditingController();
   final _controladorSenha = TextEditingController();
   final _controladorConfirmarSenha = TextEditingController();
-
   final _servicoAuth = ServicoAutenticacao();
 
   bool _carregando = false;
@@ -43,40 +35,31 @@ class _TelaCadastro2State extends State<TelaCadastro2> {
     super.dispose();
   }
 
-  // Valida campos e realiza o cadastro no Firebase
   Future<void> _realizarCadastro() async {
     final email = _controladorEmail.text.trim();
     final telefone = _controladorTelefone.text.trim();
     final senha = _controladorSenha.text;
     final confirmarSenha = _controladorConfirmarSenha.text;
 
-    // Validações dos campos
     if (email.isEmpty || telefone.isEmpty || senha.isEmpty || confirmarSenha.isEmpty) {
       setState(() => _mensagemErro = 'Preencha todos os campos.');
       return;
     }
-
     if (!email.contains('@')) {
       setState(() => _mensagemErro = 'E-mail inválido.');
       return;
     }
-
     if (senha.length < 6) {
       setState(() => _mensagemErro = 'A senha deve ter pelo menos 6 caracteres.');
       return;
     }
-
     if (senha != confirmarSenha) {
       setState(() => _mensagemErro = 'As senhas não coincidem.');
       return;
     }
 
-    setState(() {
-      _carregando = true;
-      _mensagemErro = null;
-    });
+    setState(() { _carregando = true; _mensagemErro = null; });
 
-    // Chama o serviço de autenticação passando todos os dados
     final erro = await _servicoAuth.cadastrarUsuario(
       nomeCompleto: widget.nomeCompleto,
       email: email,
@@ -88,12 +71,8 @@ class _TelaCadastro2State extends State<TelaCadastro2> {
     if (!mounted) return;
 
     if (erro != null) {
-      setState(() {
-        _mensagemErro = erro;
-        _carregando = false;
-      });
+      setState(() { _mensagemErro = erro; _carregando = false; });
     } else {
-      // Cadastro bem-sucedido: vai direto para a carteira
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const TelaCarteira()),
@@ -109,49 +88,31 @@ class _TelaCadastro2State extends State<TelaCadastro2> {
       appBar: AppBar(
         backgroundColor: Colors.grey[200],
         elevation: 0,
-        title: const Text(
-          'CADASTRO',
-          style: TextStyle(color: Colors.grey, fontSize: 18),
-        ),
+        title: const Text('CADASTRO', style: TextStyle(color: Colors.grey, fontSize: 18)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 30.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 60),
-
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                'PASSO 2 DE 2',
-                style: TextStyle(
-                  color: Color(0xFFFFC153),
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                ),
-              ),
+              child: Text('PASSO 2 DE 2',
+                  style: TextStyle(color: Color(0xFFFFC153), fontSize: 14,
+                      fontWeight: FontWeight.bold, letterSpacing: 1.2)),
             ),
-
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                'Criar conta',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
+              child: Text('Criar conta',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 6),
-            const Text(
-              'Quase lá! Preencha seus dados de acesso.',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-            ),
+            const Text('Quase lá! Preencha seus dados de acesso.',
+                style: TextStyle(color: Colors.grey, fontSize: 14)),
             const SizedBox(height: 40),
-
-            // Campo E-mail
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text('E-mail', style: TextStyle(fontWeight: FontWeight.w500)),
-            ),
+            const Align(alignment: Alignment.centerLeft,
+                child: Text('E-mail', style: TextStyle(fontWeight: FontWeight.w500))),
             const SizedBox(height: 8),
             TextField(
               controller: _controladorEmail,
@@ -163,12 +124,8 @@ class _TelaCadastro2State extends State<TelaCadastro2> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Campo Telefone
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text('Telefone', style: TextStyle(fontWeight: FontWeight.w500)),
-            ),
+            const Align(alignment: Alignment.centerLeft,
+                child: Text('Telefone', style: TextStyle(fontWeight: FontWeight.w500))),
             const SizedBox(height: 8),
             TextField(
               controller: _controladorTelefone,
@@ -180,12 +137,8 @@ class _TelaCadastro2State extends State<TelaCadastro2> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Campo Senha
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text('Senha', style: TextStyle(fontWeight: FontWeight.w500)),
-            ),
+            const Align(alignment: Alignment.centerLeft,
+                child: Text('Senha', style: TextStyle(fontWeight: FontWeight.w500))),
             const SizedBox(height: 8),
             TextField(
               controller: _controladorSenha,
@@ -193,9 +146,9 @@ class _TelaCadastro2State extends State<TelaCadastro2> {
               decoration: InputDecoration(
                 hintText: 'Mínimo 6 caracteres',
                 suffixIcon: IconButton(
-                  icon: Icon(
-                    _senhaVisivel ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                  ),
+                  icon: Icon(_senhaVisivel
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined),
                   onPressed: () => setState(() => _senhaVisivel = !_senhaVisivel),
                 ),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -203,12 +156,8 @@ class _TelaCadastro2State extends State<TelaCadastro2> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Campo Confirmar Senha
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text('Confirmar Senha', style: TextStyle(fontWeight: FontWeight.w500)),
-            ),
+            const Align(alignment: Alignment.centerLeft,
+                child: Text('Confirmar Senha', style: TextStyle(fontWeight: FontWeight.w500))),
             const SizedBox(height: 8),
             TextField(
               controller: _controladorConfirmarSenha,
@@ -216,28 +165,21 @@ class _TelaCadastro2State extends State<TelaCadastro2> {
               decoration: InputDecoration(
                 hintText: 'Repita sua senha',
                 suffixIcon: IconButton(
-                  icon: Icon(
-                    _confirmarSenhaVisivel ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                  ),
-                  onPressed: () => setState(() => _confirmarSenhaVisivel = !_confirmarSenhaVisivel),
+                  icon: Icon(_confirmarSenhaVisivel
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined),
+                  onPressed: () =>
+                      setState(() => _confirmarSenhaVisivel = !_confirmarSenhaVisivel),
                 ),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
             ),
-
-            // Mensagem de erro
             if (_mensagemErro != null) ...[
               const SizedBox(height: 10),
-              Text(
-                _mensagemErro!,
-                style: const TextStyle(color: Colors.red, fontSize: 13),
-              ),
+              Text(_mensagemErro!, style: const TextStyle(color: Colors.red, fontSize: 13)),
             ],
-
             const SizedBox(height: 40),
-
-            // Botão Cadastrar
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -245,29 +187,16 @@ class _TelaCadastro2State extends State<TelaCadastro2> {
                 onPressed: _carregando ? null : _realizarCadastro,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFFC153),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
                 child: _carregando
-                    ? const SizedBox(
-                        height: 22,
-                        width: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.black,
-                        ),
-                      )
-                    : const Text(
-                        'Cadastrar',
-                        style: TextStyle(color: Colors.black, fontSize: 18),
-                      ),
+                    ? const SizedBox(height: 22, width: 22,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
+                    : const Text('Cadastrar',
+                        style: TextStyle(color: Colors.black, fontSize: 18)),
               ),
             ),
-
             const SizedBox(height: 24),
-
-            // Link login
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -278,13 +207,8 @@ class _TelaCadastro2State extends State<TelaCadastro2> {
                     MaterialPageRoute(builder: (_) => const TelaLogin()),
                     (route) => false,
                   ),
-                  child: const Text(
-                    'Entrar',
-                    style: TextStyle(
-                      color: Color(0xFFFFC153),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: const Text('Entrar',
+                      style: TextStyle(color: Color(0xFFFFC153), fontWeight: FontWeight.bold)),
                 ),
               ],
             ),

@@ -5,5 +5,8 @@ firestore-debug.log*
 ui-debug.log*
 
 node_modules/
+backend/functions/lib/
 .idea/
 .vscode/
+CLAUDE.md
+.claude/
