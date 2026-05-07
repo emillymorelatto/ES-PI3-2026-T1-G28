@@ -1,7 +1,80 @@
-service cloud.firestore {
+// Tiago Medeiros
+
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
+
+    // ── Funções Auxiliares ────────────────────────────────────────────────────
+
+    // Retorna true se o usuário está logado
+    function isAuthenticated() {
+      return request.auth != null;
     }
+
+    // Retorna true se o usuário logado é o dono do documento
+    function isOwner(uid) {
+      return request.auth.uid == uid;
+    }
+
+    // Retorna true se o usuário é investidor de uma startup específica
+    function isInvestor(startupId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/startups/$(startupId)/investors/$(request.auth.uid));
+    }
+
+    // Retorna true se os campos enviados são exatamente os permitidos
+    function hasOnlyFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // ── Usuários  ───────────────────────────────────────────────
+    match /users/{uid} {
+
+      allow read: if isAuthenticated() && isOwner(uid);
+
+      allow create: if isAuthenticated() && isOwner(uid)
+        && hasOnlyFields(["name", "cpf", "phone", "email"]);
+
+      allow update: if isAuthenticated() && isOwner(uid)
+        && hasOnlyFields(["name", "phone"]);
+
+      allow delete: if false;
+
+      match /investments/{startupId} {
+        allow read: if isAuthenticated() && isOwner(uid);
+        allow write: if false;
+      }
+
+      match /transactions/{txId} {
+        allow read: if isAuthenticated() && isOwner(uid);
+        allow write: if false;
+      }
+    }
+
+    // ── Startups  ─────────────────────────────────────
+    match /startups/{startupId} {
+
+      allow read: if isAuthenticated();
+      allow write: if false;
+
+      match /questions/{questionId} {
+        allow read: if isAuthenticated() &&
+          (resource.data.visibility == "publica" ||
+           isOwner(resource.data.authorUid) ||
+           isInvestor(startupId));
+        allow write: if false;
+      }
+
+      match /investors/{uid} {
+        allow read: if isAuthenticated();
+        allow write: if false;
+      }
+    }
+
+    // ── Ordens do balcão de tokens ──────────────────────────────────
+    match /orders/{orderId} {
+      allow read: if isAuthenticated() &&
+        (isOwner(resource.data.uid) || resource.data.status == "aberta");
+      allow write: if false;
+    }
+
   }
 }
