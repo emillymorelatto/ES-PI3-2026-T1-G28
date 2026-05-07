@@ -1,30 +1,9 @@
-// Rodrigo Duarte 
+// Rodrigo Duarte
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-
-class Startup {
-  final String name;
-  final String shortDescription;
-  final String stage;
-  final List<String> tags;
-
-  Startup({
-    required this.name,
-    required this.shortDescription,
-    required this.stage,
-    required this.tags,
-  });
-
-  factory Startup.fromMap(Map<String, dynamic> map) {
-    return Startup(
-      name: map['name'] as String,
-      shortDescription: map['shortDescription'] as String,
-      stage: map['stage'] as String,
-      tags: List<String>.from(map['tags'] ?? []),
-    );
-  }
-}
+import 'telaDetalhe.dart';
+import '../models/startup.dart';
 
 const _stageLabels = {
   'nova': 'Nova',
@@ -67,14 +46,14 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
       final result = await FirebaseFunctions.instance
           .httpsCallable('listStartups')
           .call({
-        if (_filtroEstagio != null) 'stage': _filtroEstagio,
-        if (_searchController.text.trim().isNotEmpty)
-          'search': _searchController.text.trim(),
-      });
+            if (_filtroEstagio != null) 'stage': _filtroEstagio,
+            if (_searchController.text.trim().isNotEmpty)
+              'search': _searchController.text.trim(),
+          });
 
       final data = result.data as Map<String, dynamic>;
       final lista = (data['data'] as List)
-          .map((e) => Startup.fromMap(Map<String, dynamic>.from(e)))
+          .map((e) => Startup.fromMap(Map<String, dynamic>.from(e), e['id']))
           .toList();
 
       // Auto-seed em modo debug quando o catálogo está vazio
@@ -153,9 +132,14 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
                         decoration: InputDecoration(
                           hintText: 'Buscar por nome ou palavra-chave...',
                           hintStyle: const TextStyle(
-                              fontSize: 13, color: Color(0xFFAAAAAA)),
-                          prefixIcon: const Icon(Icons.search,
-                              color: Color(0xFFAAAAAA), size: 20),
+                            fontSize: 13,
+                            color: Color(0xFFAAAAAA),
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            color: Color(0xFFAAAAAA),
+                            size: 20,
+                          ),
                           suffixIcon: _searchController.text.isNotEmpty
                               ? IconButton(
                                   icon: const Icon(Icons.clear, size: 18),
@@ -166,8 +150,9 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
                                 )
                               : null,
                           border: InputBorder.none,
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 12),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                          ),
                         ),
                       ),
                     ),
@@ -190,19 +175,25 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
                     Text(
                       '${_startups.length} startup(s) encontrada(s)',
                       style: const TextStyle(
-                          fontSize: 12, color: Color(0xFF888888)),
+                        fontSize: 12,
+                        color: Color(0xFF888888),
+                      ),
                     ),
                     const SizedBox(height: 12),
                     if (_isLoading)
                       const Center(child: CircularProgressIndicator())
                     else if (_erro != null)
-                      Text('Erro: $_erro',
-                          style: const TextStyle(color: Colors.red))
+                      Text(
+                        'Erro: $_erro',
+                        style: const TextStyle(color: Colors.red),
+                      )
                     else
-                      ..._startups.map((s) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _StartupCard(startup: s),
-                          )),
+                      ..._startups.map(
+                        (s) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _StartupCard(startup: s),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -255,8 +246,11 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
               color: const Color(0xFFFFF3E0),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.show_chart,
-                color: Color(0xFFE67E22), size: 18),
+            child: const Icon(
+              Icons.show_chart,
+              color: Color(0xFFE67E22),
+              size: 18,
+            ),
           ),
           const SizedBox(width: 8),
           const Text(
@@ -300,7 +294,10 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 child: _buildNavItem(
-                    Icons.account_balance_wallet_rounded, 'Carteira', false),
+                  Icons.account_balance_wallet_rounded,
+                  'Carteira',
+                  false,
+                ),
               ),
               _buildNavItem(Icons.menu_book_outlined, 'Aprender', false),
               _buildNavItem(Icons.monetization_on_outlined, 'Investir', true),
@@ -365,8 +362,11 @@ class _StartupCard extends StatelessWidget {
                   color: const Color(0xFFFFF3E0),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.rocket_launch_outlined,
-                    color: Color(0xFFE67E22), size: 20),
+                child: const Icon(
+                  Icons.rocket_launch_outlined,
+                  color: Color(0xFFE67E22),
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -380,8 +380,7 @@ class _StartupCard extends StatelessWidget {
                 ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFF3E0),
                   borderRadius: BorderRadius.circular(6),
@@ -412,19 +411,25 @@ class _StartupCard extends StatelessWidget {
               spacing: 6,
               runSpacing: 4,
               children: startup.tags
-                  .map((tag) => Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF0F0F0),
-                          borderRadius: BorderRadius.circular(12),
+                  .map(
+                    (tag) => Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF0F0F0),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '#$tag',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF666666),
                         ),
-                        child: Text(
-                          '#$tag',
-                          style: const TextStyle(
-                              fontSize: 11, color: Color(0xFF666666)),
-                        ),
-                      ))
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
           ],
@@ -432,7 +437,14 @@ class _StartupCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => TelaDetalhe(startup: startup),
+                  ),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFE67E22),
                 foregroundColor: Colors.white,

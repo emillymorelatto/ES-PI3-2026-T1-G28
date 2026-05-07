@@ -4,9 +4,9 @@ import 'telaCatalogo.dart';
 
 class TelaDetalhe extends StatelessWidget {
   final Startup startup;
- 
+
   const TelaDetalhe({super.key, required this.startup});
- 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +40,7 @@ class TelaDetalhe extends StatelessWidget {
       ),
     );
   }
- 
+
   Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -49,8 +49,11 @@ class TelaDetalhe extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () => Navigator.pop(context),
-            child: const Icon(Icons.arrow_back_ios_new,
-                size: 20, color: Color(0xFF1A1A1A)),
+            child: const Icon(
+              Icons.arrow_back_ios_new,
+              size: 20,
+              color: Color(0xFF1A1A1A),
+            ),
           ),
           const SizedBox(width: 12),
           const Text(
@@ -65,8 +68,8 @@ class TelaDetalhe extends StatelessWidget {
       ),
     );
   }
- 
- Widget _buildIdentidade() {
+
+  Widget _buildIdentidade() {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: _cardDecoration(),
@@ -106,9 +109,9 @@ class TelaDetalhe extends StatelessWidget {
           Row(
             children: [
               _buildBadge(
-                startup['setor'] as String,
-                startup['corSetor'] as Color,
-                startup['corSetorTexto'] as Color,
+                startup.setor,
+                const Color(0xFFE3F2FD),
+                const Color(0xFF1976D2),
               ),
               const SizedBox(width: 8),
               _buildBadge(
@@ -122,7 +125,7 @@ class TelaDetalhe extends StatelessWidget {
       ),
     );
   }
- 
+
   Widget _buildDescricao() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -144,7 +147,7 @@ class TelaDetalhe extends StatelessWidget {
       ),
     );
   }
- 
+
   Widget _buildDadosFinanceiros() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -152,14 +155,17 @@ class TelaDetalhe extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle(Icons.monetization_on_outlined, 'Dados Financeiros'),
+          _buildSectionTitle(
+            Icons.monetization_on_outlined,
+            'Dados Financeiros',
+          ),
           const SizedBox(height: 16),
           Row(
             children: [
               Expanded(
                 child: _buildMetrica(
                   'Capital Investido',
-                  startup['investimento'] as String,
+                  startup.investimento,
                   Icons.account_balance_outlined,
                   const Color(0xFF2196F3),
                 ),
@@ -168,7 +174,7 @@ class TelaDetalhe extends StatelessWidget {
               Expanded(
                 child: _buildMetrica(
                   'Tokens Emitidos',
-                  startup['tokens'] as String? ?? '—',
+                  startup.tokens,
                   Icons.token_outlined,
                   const Color(0xFF9C27B0),
                 ),
@@ -181,7 +187,7 @@ class TelaDetalhe extends StatelessWidget {
               Expanded(
                 child: _buildMetrica(
                   'Valuation',
-                  startup['valuation'] as String? ?? '—',
+                  startup.valuation,
                   Icons.trending_up,
                   const Color(0xFF4CAF50),
                 ),
@@ -190,7 +196,7 @@ class TelaDetalhe extends StatelessWidget {
               Expanded(
                 child: _buildMetrica(
                   'Retorno Estimado',
-                  startup['retorno'] as String? ?? '—',
+                  startup.retorno,
                   Icons.percent,
                   const Color(0xFFE67E22),
                 ),
@@ -201,15 +207,16 @@ class TelaDetalhe extends StatelessWidget {
       ),
     );
   }
- 
+
   Widget _buildSocietario() {
-    final socios = startup['socios'] as List<Map<String, dynamic>>? ??
-        [
-          {'nome': 'Fundador Principal', 'percentual': 60},
-          {'nome': 'Co-Fundador', 'percentual': 25},
-          {'nome': 'Investidores', 'percentual': 15},
-        ];
- 
+    final socios = startup.socios.isNotEmpty
+        ? startup.socios
+        : [
+            {'nome': 'Fundador Principal', 'percentual': 60},
+            {'nome': 'Co-Fundador', 'percentual': 25},
+            {'nome': 'Investidores', 'percentual': 15},
+          ];
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: _cardDecoration(),
@@ -218,15 +225,17 @@ class TelaDetalhe extends StatelessWidget {
         children: [
           _buildSectionTitle(Icons.people_outline, 'Estrutura Societária'),
           const SizedBox(height: 16),
-          ...socios.map((socio) => Padding(
-                padding: const EdgeInsets.only(bottom: 14),
-                child: _buildSocioRow(socio),
-              )),
+          ...socios.map(
+            (socio) => Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: _buildSocioRow(socio),
+            ),
+          ),
         ],
       ),
     );
   }
- 
+
   Widget _buildSocioRow(Map<String, dynamic> socio) {
     final percentual = (socio['percentual'] as int).toDouble();
     return Column(
@@ -259,15 +268,14 @@ class TelaDetalhe extends StatelessWidget {
           child: LinearProgressIndicator(
             value: percentual / 100,
             backgroundColor: const Color(0xFFF0F0F0),
-            valueColor:
-                const AlwaysStoppedAnimation<Color>(Color(0xFFE67E22)),
+            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFE67E22)),
             minHeight: 8,
           ),
         ),
       ],
     );
   }
- 
+
   Widget _buildBotaoInvestir(BuildContext context) {
     return SizedBox(
       width: double.infinity,
@@ -293,7 +301,7 @@ class TelaDetalhe extends StatelessWidget {
       ),
     );
   }
- 
+
   Widget _buildSectionTitle(IconData icon, String titulo) {
     return Row(
       children: [
@@ -310,7 +318,7 @@ class TelaDetalhe extends StatelessWidget {
       ],
     );
   }
- 
+
   Widget _buildBadge(String texto, Color bgColor, Color textColor) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -328,9 +336,8 @@ class TelaDetalhe extends StatelessWidget {
       ),
     );
   }
- 
-  Widget _buildMetrica(
-      String label, String valor, IconData icon, Color cor) {
+
+  Widget _buildMetrica(String label, String valor, IconData icon, Color cor) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -353,16 +360,13 @@ class TelaDetalhe extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 11,
-              color: Color(0xFF888888),
-            ),
+            style: const TextStyle(fontSize: 11, color: Color(0xFF888888)),
           ),
         ],
       ),
     );
   }
- 
+
   BoxDecoration _cardDecoration() {
     return BoxDecoration(
       color: Colors.white,
