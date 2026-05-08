@@ -1,6 +1,7 @@
 // Davi Vitoretti
 import 'package:flutter/material.dart';
 import 'telaCatalogo.dart';
+import 'telaPerfil.dart';
 
 class TelaCarteira extends StatelessWidget {
   const TelaCarteira({super.key});
@@ -385,7 +386,18 @@ class TelaCarteira extends StatelessWidget {
                 ),
                 child: _buildNavItem(Icons.monetization_on_outlined,'Investir',false)
               ),
-              _buildNavItem(Icons.bar_chart_rounded, 'Gráficos', false),
+              TextButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TelaPerfil()),
+                ),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: _buildNavItem(Icons.person_outline, 'Perfil', false),
+              ),
             ],
           ),
         ),
