@@ -1,5 +1,7 @@
 // Tiago Medeiros
 
+rules_version = '2';
+service cloud.firestore {
   match /databases/{database}/documents {
 
     // ── Funções Auxiliares ────────────────────────────────────────────────────

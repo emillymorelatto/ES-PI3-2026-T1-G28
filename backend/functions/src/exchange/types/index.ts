@@ -1,24 +1,19 @@
-// Tiago Medeiros 
+// Tiago Medeiros
 
-import { HttpsError } from "firebase-functions/https";
+import { FieldValue } from "firebase-admin/firestore";
 
-// valida os dados recebidos na compra e venda
-export function validarDadosOperacao(data: unknown): {
+export interface TransacaoDocument {
+    uid: string;
     startupId: string;
-    quantidade: number;
-} {
-    const d = data as Record<string, unknown>;
+    tipo: "compra" | "venda";
+    quantidadeTokens: number;
+    precoPorTokenCents: number;
+    totalCents: number;
+    createdAt: FieldValue;
+}
 
-    if (!d?.startupId || typeof d.startupId !== "string") {
-        throw new HttpsError("invalid-argument", "Informe o startupId.");
-    }
-
-    if (!d?.quantidade || typeof d.quantidade !== "number" || d.quantidade <= 0) {
-        throw new HttpsError("invalid-argument", "Quantidade deve ser um número maior que zero.");
-    }
-
-    return {
-        startupId: d.startupId as string,
-        quantidade: d.quantidade as number,
-    };
+export interface InvestimentoDocument {
+    startupId: string;
+    quantidadeTokens: number;
+    updatedAt: FieldValue;
 }

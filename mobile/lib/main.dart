@@ -10,6 +10,8 @@ import 'firebase_options.dart';
 import 'screens/telalogin.dart';
 import 'screens/telacarteira.dart';
 
+bool _emulatorsConfigured = false;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -17,12 +19,18 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  if (kDebugMode) {
+  if (kDebugMode && !_emulatorsConfigured) {
     const host = kIsWeb ? 'localhost' : '10.0.2.2';
     FirebaseFirestore.instance.useFirestoreEmulator(host, 8082);
     await FirebaseAuth.instance.useAuthEmulator(host, 9099);
     FirebaseFunctions.instanceFor(region: 'us-central1')
         .useFunctionsEmulator(host, 5001);
+    _emulatorsConfigured = true;
+
+    // Garante que nenhuma sessão de produção cacheada passe para o emulador
+    if (FirebaseAuth.instance.currentUser != null) {
+      await FirebaseAuth.instance.signOut();
+    }
   }
 
   runApp(const MyApp());

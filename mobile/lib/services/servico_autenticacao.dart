@@ -1,12 +1,13 @@
 // Murilo Moraes
 // Serviço responsável por todas as operações de autenticação com Firebase
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ServicoAutenticacao {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFunctions _functions =
+      FirebaseFunctions.instanceFor(region: 'us-central1');
 
   // Retorna o usuário autenticado atualmente
   User? get usuarioAtual => _auth.currentUser;
@@ -22,9 +23,10 @@ class ServicoAutenticacao {
     required String telefone,
     required String senha,
   }) async {
+    UserCredential? credencial;
     try {
       // Cria conta no Firebase Auth
-      final credencial = await _auth.createUserWithEmailAndPassword(
+      credencial = await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: senha,
       );
@@ -32,39 +34,25 @@ class ServicoAutenticacao {
       // Atualiza o nome de exibição do usuário
       await credencial.user?.updateDisplayName(nomeCompleto.trim());
 
-      // Salva dados adicionais no Firestore
-      await _salvarDadosUsuario(
-        uid: credencial.user!.uid,
-        nomeCompleto: nomeCompleto.trim(),
-        email: email.trim(),
-        cpf: cpf.trim(),
-        telefone: telefone.trim(),
-      );
+      // Persiste o perfil via Callable Function (única camada autorizada
+      // a escrever em /users no Firestore).
+      await _functions.httpsCallable('registerUser').call({
+        'name': nomeCompleto.trim(),
+        'cpf': cpf.trim(),
+        'phone': telefone.trim(),
+      });
 
       return null; // null = sem erro
     } on FirebaseAuthException catch (e) {
       return _traduzirErroAuth(e.code);
+    } on FirebaseFunctionsException catch (e) {
+      // Auth foi criado mas o perfil falhou: desfaz para o usuário poder tentar de novo.
+      await credencial?.user?.delete().catchError((_) {});
+      return e.message ?? 'Não foi possível salvar o perfil. Tente novamente.';
     } catch (e) {
+      await credencial?.user?.delete().catchError((_) {});
       return 'Erro inesperado. Tente novamente.';
     }
-  }
-
-  // Salva perfil do usuário na coleção 'usuarios' do Firestore
-  Future<void> _salvarDadosUsuario({
-    required String uid,
-    required String nomeCompleto,
-    required String email,
-    required String cpf,
-    required String telefone,
-  }) async {
-    await _firestore.collection('usuarios').doc(uid).set({
-      'nomeCompleto': nomeCompleto,
-      'email': email,
-      'cpf': cpf,
-      'telefone': telefone,
-      'saldoSimulado': 0.0, // saldo fictício inicial em reais
-      'criadoEm': FieldValue.serverTimestamp(),
-    });
   }
 
   // Realiza login com email e senha

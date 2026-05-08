@@ -22,6 +22,13 @@ export async function getUserDocument(uid: string): Promise<UserDocument | null>
     return doc.data() as UserDocument;
 }
 
+export async function getUserProfile(uid: string): Promise<UserProfile | null> {
+    const doc = await getUserDocument(uid);
+    if (!doc) return null;
+    const { saldoCents: _, ...profile } = doc;
+    return profile;
+}
+
 // Get saldo
 export async function getSaldo(uid: string): Promise<number> {
     const doc = await getUserDocument(uid);

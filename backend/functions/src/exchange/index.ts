@@ -7,7 +7,7 @@ import { db } from "./shared/firebase";
 import { requireAuthenticatedUser } from "./shared/auth";
 import { validarDadosOperacao } from "./shared/validation";
 import { TransacaoDocument, InvestimentoDocument } from "./types";
-import { getSaldo, debitarSaldo } from "../auth/repositories/userRepository";
+import { getSaldo } from "../auth/repositories/userRepository";
 
 export const comprarTokens = onCall(async (request) => {
     const user = requireAuthenticatedUser(request);
@@ -65,8 +65,11 @@ export const comprarTokens = onCall(async (request) => {
         .collection("investors").doc(user.uid);
     batch.set(investidorRef, { uid: user.uid, since: FieldValue.serverTimestamp() }, { merge: true });
 
+    // débito de saldo dentro do batch — garante atomicidade total
+    const userRef = db.collection("users").doc(user.uid);
+    batch.update(userRef, { saldoCents: FieldValue.increment(-totalCents) });
+
     await batch.commit();
-    await debitarSaldo(user.uid, totalCents);
 
     logger.info("Compra realizada.", { uid: user.uid, startupId, quantidade, totalCents });
 

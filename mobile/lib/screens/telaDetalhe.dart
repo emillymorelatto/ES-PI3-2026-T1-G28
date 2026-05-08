@@ -1,6 +1,7 @@
 // Tiago Medeiros
 import 'package:flutter/material.dart';
 import 'telaCatalogo.dart';
+import '../models/startup.dart';
 
 class TelaDetalhe extends StatelessWidget {
   final Startup startup;
