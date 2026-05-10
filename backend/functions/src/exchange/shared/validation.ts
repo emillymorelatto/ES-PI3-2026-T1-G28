@@ -3,9 +3,9 @@
 import { HttpsError } from "firebase-functions/https";
 
 // valida os dados recebidos na compra e venda
-export function validarDadosOperacao(data: unknown): {
+export function validateOperationData(data: unknown): {
     startupId: string;
-    quantidade: number;
+    quantity: number;
 } {
     const d = data as Record<string, unknown>;
 
@@ -13,12 +13,12 @@ export function validarDadosOperacao(data: unknown): {
         throw new HttpsError("invalid-argument", "Informe o startupId.");
     }
 
-    if (!d?.quantidade || typeof d.quantidade !== "number" || d.quantidade <= 0) {
+    if (!d?.quantity || typeof d.quantity !== "number" || d.quantity <= 0) {
         throw new HttpsError("invalid-argument", "Quantidade deve ser um número maior que zero.");
     }
 
     return {
         startupId: d.startupId as string,
-        quantidade: d.quantidade as number,
+        quantity: d.quantity as number,
     };
 }
