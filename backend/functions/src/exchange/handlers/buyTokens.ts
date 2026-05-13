@@ -26,7 +26,7 @@ export const buyTokens = onCall(async (request) => {
     if (balance < totalCents) {
         throw new HttpsError(
             "failed-precondition",
-            `Saldo insuficiente. Necessário: R$ ${(totalCents / 100).toFixed(2)}, disponível: R$ ${(balance / 100).toFixed(2)}.`
+            `Saldo insuficiente. Necessário: ${totalCents} MT, disponível: ${balance} MT.`
         );
     }
 
