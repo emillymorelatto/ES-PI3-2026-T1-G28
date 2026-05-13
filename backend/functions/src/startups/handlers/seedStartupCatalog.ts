@@ -1,7 +1,7 @@
 // Murilo Moraes
 import { HttpsError, onCall } from "firebase-functions/https";
 import { seedDemoStartups } from "../repositories/startupRepository";
-import { normalizeString } from "../shared/validation";
+import { normalizeString } from "../../auth/shared/validation";
 /**
 * Popula o catálogo com startups demonstrativas.
 *

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'telaDetalhe.dart';
+import 'telaPerfil.dart';
 import '../models/startup.dart';
 
 const _stageLabels = {
@@ -301,7 +302,18 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
               ),
               _buildNavItem(Icons.menu_book_outlined, 'Aprender', false),
               _buildNavItem(Icons.monetization_on_outlined, 'Investir', true),
-              _buildNavItem(Icons.bar_chart_rounded, 'Gráficos', false),
+              TextButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TelaPerfil()),
+                ),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: _buildNavItem(Icons.person_outline, 'Perfil', false),
+              ),
             ],
           ),
         ),
