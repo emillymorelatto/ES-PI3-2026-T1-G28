@@ -114,6 +114,8 @@ class _TelaCarteiraState extends State<TelaCarteira> {
               _buildAcoes(),
               const SizedBox(height: 28),
               _buildAtivosSection(),
+              const SizedBox(height: 28),
+              _buildHistoricoSection(),
             ],
           ),
         ),
@@ -491,6 +493,168 @@ class _TelaCarteiraState extends State<TelaCarteira> {
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Seção Histórico de Transações ─────────────────────────────────────────
+  Widget _buildHistoricoSection() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Histórico de Transações',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF1A1A1A),
+          ),
+        ),
+        const SizedBox(height: 14),
+        if (uid == null)
+          const Text('Faça login para ver seu histórico.')
+        else
+          StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(uid)
+                .collection('transactions')
+                .orderBy('createdAt', descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+              final docs = snapshot.data?.docs ?? [];
+              if (docs.isEmpty) {
+                return Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Text(
+                    'Nenhuma transação registrada ainda.',
+                    style:
+                        TextStyle(fontSize: 13, color: Color(0xFF888888)),
+                  ),
+                );
+              }
+              return Column(
+                children: [
+                  for (final doc in docs) ...[
+                    _buildTransacaoCard(doc.data()),
+                    const SizedBox(height: 10),
+                  ],
+                ],
+              );
+            },
+          ),
+      ],
+    );
+  }
+
+  // Card de uma transação individual (compra ou venda).
+  Widget _buildTransacaoCard(Map<String, dynamic> data) {
+    final tipo = data['type'] as String? ?? '';
+    final ehCompra = tipo == 'buy';
+    final startupId = data['startupId'] as String? ?? '';
+    final quantidade = (data['tokenQuantity'] as num?)?.toInt() ?? 0;
+    final total = (data['totalCents'] as num?)?.toInt() ?? 0;
+    final createdAt = data['createdAt'];
+
+    String dataFormatada = '';
+    if (createdAt is Timestamp) {
+      final d = createdAt.toDate();
+      final dd = d.day.toString().padLeft(2, '0');
+      final mm = d.month.toString().padLeft(2, '0');
+      final hh = d.hour.toString().padLeft(2, '0');
+      final mi = d.minute.toString().padLeft(2, '0');
+      dataFormatada = '$dd/$mm $hh:$mi';
+    }
+
+    final cor = ehCompra ? const Color(0xFFE74C3C) : const Color(0xFF27AE60);
+    final sinal = ehCompra ? '-' : '+';
+    final icone = ehCompra
+        ? Icons.arrow_downward_rounded
+        : Icons.arrow_upward_rounded;
+    final rotulo = ehCompra ? 'Compra' : 'Venda';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: cor.withOpacity(0.12),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icone, size: 20, color: cor),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+              future: FirebaseFirestore.instance
+                  .collection('startups')
+                  .doc(startupId)
+                  .get(),
+              builder: (context, snapshot) {
+                final nome =
+                    snapshot.data?.data()?['name'] as String? ?? startupId;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$rotulo · $nome',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF1A1A1A),
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '$quantidade ${quantidade == 1 ? "token" : "tokens"}'
+                      '${dataFormatada.isNotEmpty ? " · $dataFormatada" : ""}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF888888),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            '$sinal${_formatarTokens(total)} MT',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: cor,
+            ),
           ),
         ],
       ),
