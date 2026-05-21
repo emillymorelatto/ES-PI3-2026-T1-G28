@@ -3,8 +3,8 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { HttpsError, onCall } from "firebase-functions/https";
 import * as logger from "firebase-functions/logger";
-import { db } from "./shared/firebase";
-import { requireAuthenticatedUser } from "./shared/auth";
+import { db } from "../auth/shared/firebase";
+import { requireAuthenticatedUser } from "../auth/shared/auth";
 import { validarDadosOperacao } from "./shared/validation";
 import { TransacaoDocument, InvestimentoDocument } from "./types";
 import { getSaldo, debitarSaldo } from "../auth/repositories/userRepository";

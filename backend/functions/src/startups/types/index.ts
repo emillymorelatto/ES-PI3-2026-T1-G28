@@ -1,4 +1,5 @@
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
+import { TransacaoDocument, InvestimentoDocument } from "./types";
 
 export type StartupStage = "nova" | "em_operacao" | "em_expansao";
 export type QuestionVisibility = "publica" | "privada";

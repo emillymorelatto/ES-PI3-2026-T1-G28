@@ -1,6 +1,9 @@
 // Tiago Medeiros
 import 'package:flutter/material.dart';
+import 'package:mobile/screens/perguntasPrivadas.dart';
 import 'telaCatalogo.dart';
+import '../models/startup.dart';
+import 'perguntasPrivadas.dart';
 
 class TelaDetalhe extends StatelessWidget {
   final Startup startup;
@@ -30,6 +33,37 @@ class TelaDetalhe extends StatelessWidget {
                     _buildSocietario(),
                     const SizedBox(height: 16),
                     _buildBotaoInvestir(context),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const PerguntasPrivadasInvestidor(),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1A1A1A),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'Perguntas exclusivas',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 16),
                   ],
                 ),

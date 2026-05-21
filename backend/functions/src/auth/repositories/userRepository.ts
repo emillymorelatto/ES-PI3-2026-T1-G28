@@ -16,6 +16,23 @@ export async function saveUserProfile(uid: string, profile: UserProfile): Promis
     await usersCollection.doc(uid).set(documento, { merge: true });
 }
 
+export async function getUserProfile(uid: string): Promise<UserProfile | null> {
+    const doc = await usersCollection.doc(uid).get();
+
+    if (!doc.exists) {
+        return null;
+    }
+
+    const data = doc.data() as UserDocument;
+
+    return {
+        name: data.name,
+        cpf: data. cpf,
+        phone: data.phone,
+        email: data.email,
+    };
+}
+
 export async function getUserDocument(uid: string): Promise<UserDocument | null> {
     const doc = await usersCollection.doc(uid).get();
     if (!doc.exists) return null;
