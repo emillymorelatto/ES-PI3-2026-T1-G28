@@ -1,6 +1,8 @@
+// Rodrigo Gabi 25001714
 // Tiago Medeiros
 import 'package:flutter/material.dart';
 import 'telaCatalogo.dart';
+import 'perguntasPrivadas.dart';
 import '../models/startup.dart';
 import '../services/servico_carteira.dart';
 
@@ -449,6 +451,34 @@ class _TelaDetalheState extends State<TelaDetalhe> {
             child: const Text(
               'Vender meus tokens',
               style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => PerguntasPrivadasInvestidor(
+                  startupId: startup.id,
+                  startupNome: startup.name,
+                ),
+              ),
+            ),
+            icon: const Icon(Icons.question_answer_outlined),
+            label: const Text(
+              'Perguntas de Investidores',
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+            ),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFF1976D2),
+              side: const BorderSide(color: Color(0xFF1976D2), width: 1.5),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
         ),
