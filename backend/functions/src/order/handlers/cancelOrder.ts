@@ -1,11 +1,12 @@
-import { HttpsError, onCall } from "firebase-functions";
+//autor: Emilly Morelatto
+import { HttpsError, onCall,CallableRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import { requireAuthenticatedUser } from "../shared/auth";
 import { db } from "../shared/firebase";
 import { OrderStatus } from "../shared/order";
 import { FieldValue } from "firebase-admin/firestore";
 
-export const cancelOrder = onCall(async (request) => {
+export const cancelOrder = onCall(async (request: CallableRequest<any>) => {
     const user = requireAuthenticatedUser(request);
 
     const orderId = typeof request.data?.orderId === "string"

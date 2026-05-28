@@ -1,12 +1,12 @@
 //autor: Emilly Morelatto
-import { HttpsError, onCall } from "firebase-functions";
+import { HttpsError, onCall , CallableRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import { requireAuthenticatedUser } from "../shared/auth";
 import { db } from "../shared/firebase";
 import { OrderType, OrderStatus } from "../shared/order";
 import { FieldValue } from "firebase-admin/firestore";
 
-export const createOrder = onCall(async (request) => {
+export const createOrder = onCall(async (request: CallableRequest<any>) => {
     const user = requireAuthenticatedUser(request);
 
     const data = request.data ?? {};
