@@ -122,11 +122,12 @@ class _PerguntasPrivadasInvestidorState
                               children: [
                                 Row(
                                   children: [
-                                    const Icon(Icons.lock_open,
+                                    Icon(
+                                        p['visibility'] == 'privada' ? Icons.lock : Icons.lock_open,
                                         size: 16, color: Color(0xFFE67E22)),
                                     const SizedBox(width: 6),
-                                    const Text(
-                                      'Pergunta exclusiva',
+                                    Text(
+                                      p['visibility'] == 'privada' ? 'Pergunta exclusiva' : 'Pergunta pública',
                                       style: TextStyle(
                                         fontSize: 11,
                                         color: Color(0xFFE67E22),

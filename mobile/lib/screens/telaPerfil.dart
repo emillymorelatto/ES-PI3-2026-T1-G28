@@ -255,7 +255,7 @@ class _TelaPerfilState extends State<TelaPerfil> {
                   MaterialPageRoute(builder: (_) => const TelaCarteira()),
                 ),
               ),
-              _buildNavItem(Icons.menu_book_outlined, 'Aprender', false),
+              _buildNavItem(Icons.storefront_outlined, 'Balcão', false),
               _navButton(
                 context,
                 Icons.monetization_on_outlined,
