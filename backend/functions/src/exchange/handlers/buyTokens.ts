@@ -7,7 +7,8 @@ import { db } from "../shared/firebase";
 import { requireAuthenticatedUser } from "../shared/auth";
 import { validateOperationData } from "../shared/validation";
 import { TransactionDocument, InvestmentDocument } from "../types";
-import { getBalance } from "../repositories/exchangeRepositories";
+import { getBalance, registrarMudancaPreco } from "../repositories/exchangeRepositories";
+import { calcularNovoPreco } from "../shared/price";
 
 export const buyTokens = onCall(async (request) => {
     const user = requireAuthenticatedUser(request);
@@ -68,6 +69,10 @@ export const buyTokens = onCall(async (request) => {
     // débito de saldo dentro do batch — garante atomicidade total
     const userRef = db.collection("users").doc(user.uid);
     batch.update(userRef, { balanceCents: FieldValue.increment(-totalCents) });
+
+    // compra valoriza o token (+2%): atualiza preço e registra no histórico
+    const novoPreco = calcularNovoPreco(pricePerTokenCents, "buy");
+    registrarMudancaPreco(batch, startupId, novoPreco);
 
     await batch.commit();
 
