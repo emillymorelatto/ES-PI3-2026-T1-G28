@@ -5,4 +5,5 @@ setGlobalOptions({ maxInstances: 10 });
 
 export * from "./auth";
 export * from "./startups";
-export * from "./exchange"; 
+export * from "./exchange";
+export * from "./twofactor";
