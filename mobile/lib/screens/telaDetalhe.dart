@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'telaCatalogo.dart';
 import '../models/startup.dart';
 import '../services/servico_carteira.dart';
+import 'dashbordGrafico.dart';
 
 class TelaDetalhe extends StatefulWidget {
   final Startup startup;
@@ -155,6 +156,25 @@ class _TelaDetalheState extends State<TelaDetalhe> {
                     _buildSocietario(),
                     const SizedBox(height: 16),
                     _buildBotaoInvestir(context),
+                    const SizedBox(height: 16),
+                    
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const DashboardGrafico(),
+                            ),
+                          );
+                        },
+
+                        child: const Text("Ver Dashboard / Gráfico"),
+                      ),
+                    ),
+
                     const SizedBox(height: 16),
                   ],
                 ),
