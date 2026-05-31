@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../services/servico_carteira.dart';
 import 'telaCatalogo.dart';
 import 'telaPerfil.dart';
+import 'telabalcao.dart';
 
 class TelaCarteira extends StatefulWidget {
   const TelaCarteira({super.key});
@@ -364,15 +365,13 @@ class _TelaCarteiraState extends State<TelaCarteira> {
   // ── Ações (Depositar / Transferir / Converter) ────────────────────────────
   Widget _buildAcoes() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildAcaoItem(
           Icons.south_west_rounded,
           'Depositar',
           onTap: _abrirDialogoDeposito,
-        ),
-        _buildAcaoItem(Icons.north_east_rounded, 'Transferir'),
-        _buildAcaoItem(Icons.swap_horiz_rounded, 'Converter'),
+        )
       ],
     );
   }
@@ -760,7 +759,18 @@ class _TelaCarteiraState extends State<TelaCarteira> {
             children: [
               _buildNavItem(Icons.account_balance_wallet_rounded, 'Carteira',
                   true),
-              _buildNavItem(Icons.storefront_outlined, 'Balcão', false),
+              TextButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TelaBalcao()),
+                ),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: _buildNavItem(Icons.storefront_outlined, 'Balcão', false),
+              ),
               TextButton(
                 onPressed: () => Navigator.push(
                   context,
