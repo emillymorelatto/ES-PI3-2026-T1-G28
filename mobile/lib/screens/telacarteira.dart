@@ -1,4 +1,4 @@
-// Davi Vitoretti
+// Davi José Bertuolo Vitoreti, 25004168
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -110,6 +110,8 @@ class _TelaCarteiraState extends State<TelaCarteira> {
               _buildHeader(),
               const SizedBox(height: 24),
               _buildSaldoCard(),
+              const SizedBox(height: 24),
+              _buildValueCard(),
               const SizedBox(height: 24),
               _buildAcoes(),
               const SizedBox(height: 28),
@@ -224,9 +226,7 @@ class _TelaCarteiraState extends State<TelaCarteira> {
                   ),
                 );
               }
-              final saldo =
-                  (snapshot.data?.data()?['balanceCents'] as num?)?.toInt() ??
-                      0;
+              final saldo = (snapshot.data?.data()?['balanceCents'] as num?)?.toInt() ?? 0;
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 textBaseline: TextBaseline.alphabetic,
@@ -278,6 +278,84 @@ class _TelaCarteiraState extends State<TelaCarteira> {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  // Card da valorização
+  Widget _buildValueCard() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black,
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Valorização',
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF888888),
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          const SizedBox(height: 12),
+          StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(uid)
+                .collection('transactions')
+                .snapshots(),
+            builder: (context, snapshot) {
+              final docs = snapshot.data?.docs ?? [];
+              int total = 0;
+              for (final doc in docs) {
+                Map<String, dynamic> transaction = doc.data();
+                if (transaction['type'] == 'buy') {
+                  total += (transaction['totalCents'] as num?)?.toInt() ?? 0;
+                } else {
+                  total -= (transaction['totalCents'] as num?)?.toInt() ?? 0;
+                }
+              }
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    _formatarTokens(total),
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1A1A1A),
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'MT',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFFE67E22),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 14),
         ],
       ),
     );

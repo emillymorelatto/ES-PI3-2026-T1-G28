@@ -15,7 +15,8 @@
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "firebase-admin": "13.8.0",
-    "firebase-functions": "7.2.5"
+    "firebase-functions": "7.2.5",
+    "nodemailer": "^8.0.10"
   },
   "devDependencies": {
     "nodemon": "^3.1.14",
@@ -26,10 +27,19 @@
     "runtime": "nodejs18"
   },
   "emulators": {
-    "auth": { "port": 9099 },
-    "firestore": { "port": 8082 },
-    "functions": { "port": 5001 },
-    "ui": { "enabled": true, "port": 4000 },
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8082
+    },
+    "functions": {
+      "port": 5001
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    },
     "singleProjectMode": true
   }
 }
