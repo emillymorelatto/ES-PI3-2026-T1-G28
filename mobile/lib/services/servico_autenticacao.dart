@@ -73,6 +73,30 @@ class ServicoAutenticacao {
     }
   }
 
+  // 1ª etapa do 2FA: backend gera o código e envia por e-mail.
+  Future<String?> iniciar2FA() async {
+    try {
+      await _functions.httpsCallable('startTwoFactor').call();
+      return null; // null = sem erro
+    } on FirebaseFunctionsException catch (e) {
+      return e.message ?? 'Não foi possível enviar o código.';
+    } catch (e) {
+      return 'Erro inesperado. Tente novamente.';
+    }
+  }
+
+  // 2ª etapa do 2FA: envia o código digitado para o backend conferir.
+  Future<String?> verificar2FA(String codigo) async {
+    try {
+      await _functions.httpsCallable('verifyTwoFactor').call({'code': codigo.trim()});
+      return null; // null = sem erro
+    } on FirebaseFunctionsException catch (e) {
+      return e.message ?? 'Código inválido.';
+    } catch (e) {
+      return 'Erro inesperado. Tente novamente.';
+    }
+  }
+
   // Envia e-mail de recuperação de senha
   Future<String?> recuperarSenha(String email) async {
     try {

@@ -682,7 +682,7 @@ class _TelaCarteiraState extends State<TelaCarteira> {
             children: [
               _buildNavItem(Icons.account_balance_wallet_rounded, 'Carteira',
                   true),
-              _buildNavItem(Icons.menu_book_outlined, 'Aprender', false),
+              _buildNavItem(Icons.storefront_outlined, 'Balcão', false),
               TextButton(
                 onPressed: () => Navigator.push(
                   context,
