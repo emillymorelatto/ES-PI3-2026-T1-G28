@@ -465,42 +465,6 @@ class _TelaCarteiraState extends State<TelaCarteira> {
                         cor: corVariacao,
                         prefixo: positivo ? '+' : '-',
                       ),
-
-                      // ── Botão "Ver Dashboard" ─────────────────────────────
-                      // PARTE 4: abre o Dashboard (Parte 3) direto da carteira.
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton.icon(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const TelaPerfil(), // Placeholder, substituir por TelaDashboard()
-                            ),
-                          ),
-                          icon: const Icon(
-                            Icons.bar_chart_rounded,
-                            size: 18,
-                            color: Color(0xFFE67E22),
-                          ),
-                          label: const Text(
-                            'Ver Dashboard',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFFE67E22),
-                            ),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(
-                                color: Color(0xFFE67E22), width: 1.5),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 );
@@ -549,15 +513,13 @@ class _TelaCarteiraState extends State<TelaCarteira> {
   // ── Ações (Depositar / Transferir / Converter) ────────────────────────────
   Widget _buildAcoes() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildAcaoItem(
           Icons.south_west_rounded,
           'Depositar',
           onTap: _abrirDialogoDeposito,
-        ),
-        _buildAcaoItem(Icons.north_east_rounded, 'Transferir'),
-        _buildAcaoItem(Icons.swap_horiz_rounded, 'Converter'),
+        )
       ],
     );
   }
