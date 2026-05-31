@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../services/servico_carteira.dart';
 import 'telaCatalogo.dart';
 import 'telaPerfil.dart';
+import 'telabalcao.dart';
 
 class TelaCarteira extends StatefulWidget {
   const TelaCarteira({super.key});
@@ -680,7 +681,18 @@ class _TelaCarteiraState extends State<TelaCarteira> {
             children: [
               _buildNavItem(Icons.account_balance_wallet_rounded, 'Carteira',
                   true),
-              _buildNavItem(Icons.storefront_outlined, 'Balcão', false),
+              TextButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TelaBalcao()),
+                ),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: _buildNavItem(Icons.storefront_outlined, 'Balcão', false),
+              ),
               TextButton(
                 onPressed: () => Navigator.push(
                   context,
