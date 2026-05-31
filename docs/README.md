@@ -23,20 +23,22 @@ A plataforma permite que usuários explorem startups, acompanhem informações r
 - Integração entre sistemas
 
 ### Funcionalidades
-Autenticação: Cadastro de usuário, login com e-mail e senha, recuperação de senha.
-Startups: Listagem de startups e visualização de detalhes
-Tokens: Compra e venda de tokens, e um registro.
-Interação: Envio de dúvidas para startups e atualizações
+Autenticação: Cadastro de usuário, login com e-mail e senha, recuperação de senha e verificação em duas etapas (2FA) por e-mail.
+Startups: Listagem com filtros e busca, visualização de detalhes (sócios, capital e tokens) e seed do catálogo para testes.
+Tokens: Compra e venda simulada de tokens, carteira do usuário com saldo e registro das operações.
+Balcão: Criação de ordens de compra e venda e casamento (match) de ordens entre usuários.
+Dashboard: Acompanhamento da valorização dos tokens com histórico de preços em gráfico.
+Interação: Envio de perguntas para as startups (públicas ou privadas, sendo as privadas restritas a investidores).
 
 ### Tecnologias utilizadas
-Backend: Node.js e Typescrispt/Javascript (Interface do usuário)
-Frontend: Flutter, dart (Regras de negócio e API)
-Banco de dados: Firebase Firestore (Armazenamento dos dados)
-Ferramentas: Git, github, VisualStudio Code ou Android Studio
+Backend: Node.js e TypeScript com Firebase Cloud Functions (regras de negócio e API)
+Frontend: Flutter e Dart (interface do usuário)
+Banco de dados: Firebase Firestore (armazenamento dos dados)
+Ferramentas: Git, GitHub, Visual Studio Code ou Android Studio, Firebase
 
 ### Como executar o projeto
-No terminal, entrar na pasta backend e dar um npm install.
-Depois, entre na pasta mobile e de um flutter pub get.
+Backend: entre na pasta backend/functions, dê um npm install (necessário na primeira vez), depois npm run build para compilar e firebase deploy para publicar as functions no Firebase.
+Frontend: entre na pasta mobile, dê um flutter pub get e rode com flutter run.
 Se você não tiver o Node ou o Flutter configurado ainda, precisa baixar os instaladores oficiais primeiro!
 
 ### Licença
