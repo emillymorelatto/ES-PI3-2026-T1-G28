@@ -166,7 +166,7 @@ class _TelaDetalheState extends State<TelaDetalhe> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const DashboardGrafico(),
+                              builder: (context) => DashboardGrafico(startupId: startup.id),
                             ),
                           );
                         },

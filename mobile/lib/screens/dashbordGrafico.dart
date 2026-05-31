@@ -2,31 +2,60 @@
 
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class DashboardGrafico extends StatefulWidget {
-  const DashboardGrafico({super.key});
+  final String startupId;
+  const DashboardGrafico({super.key, required this.startupId});
 
   @override
   State<DashboardGrafico> createState() => _DashboardGraficoState();
 }
 
 class _DashboardGraficoState extends State<DashboardGrafico> {
-  String periodoSelecionado = "Diário";
-
-  final Map<String, List<double>> dadosPorPeriodo = {
-    "Diário": [10, 11, 12, 11.5, 13, 14],
-    "Semanal": [10, 12, 15, 14, 16, 18],
-    "Mensal": [8, 10, 14, 18, 20, 24],
-    "6M": [6, 9, 13, 15, 21, 27],
-    "YTD": [5, 8, 12, 17, 23, 30],
+  // rótulo do botão -> código que o backend (Parte 2) espera
+  final Map<String, String> periodos = {
+    "Diário": "daily",
+    "Semanal": "weekly",
+    "Mensal": "monthly",
+    "6M": "6months",
+    "YTD": "ytd",
   };
+
+  String periodoSelecionado = "Diário";
+  List<double> precos = [];
+  double variacao = 0;
+  bool carregando = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _carregar();
+  }
+
+  // Busca o histórico real de preços no backend (getTokenPriceHistory).
+  Future<void> _carregar() async {
+    setState(() => carregando = true);
+    try {
+      final r = await FirebaseFunctions.instanceFor(region: 'us-central1')
+          .httpsCallable('getTokenPriceHistory')
+          .call({'startupId': widget.startupId, 'period': periodos[periodoSelecionado]});
+      // o retorno vem embrulhado em data.data
+      final dados = (r.data['data'] ?? {}) as Map;
+      final historico = (dados['history'] as List?) ?? [];
+      setState(() {
+        precos = historico.map((p) => (p['priceCents'] as num).toDouble()).toList();
+        variacao = (dados['variationPercent'] as num?)?.toDouble() ?? 0;
+        carregando = false;
+      });
+    } catch (_) {
+      setState(() { precos = []; variacao = 0; carregando = false; });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final dados = dadosPorPeriodo[periodoSelecionado]!;
-    final precoInicial = dados.first;
-    final precoAtual = dados.last;
-    final variacao = ((precoAtual - precoInicial) / precoInicial) * 100;
+    final precoAtual = precos.isNotEmpty ? precos.last : 0.0;
     final subiu = variacao >= 0;
 
     return Scaffold(
@@ -48,7 +77,7 @@ class _DashboardGraficoState extends State<DashboardGrafico> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "R\$ ${precoAtual.toStringAsFixed(2)}",
+                      "${precoAtual.toStringAsFixed(0)} MT",
                       style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -72,12 +101,11 @@ class _DashboardGraficoState extends State<DashboardGrafico> {
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: ["Diário", "Semanal", "Mensal", "6M", "YTD"].map((p) {
+              children: periodos.keys.map((p) {
                 return ElevatedButton(
                   onPressed: () {
-                    setState(() {
-                      periodoSelecionado = p;
-                    });
+                    setState(() => periodoSelecionado = p);
+                    _carregar();
                   },
                   child: Text(p),
                 );
@@ -87,27 +115,32 @@ class _DashboardGraficoState extends State<DashboardGrafico> {
             const SizedBox(height: 24),
 
             Expanded(
-              child: LineChart(
-                LineChartData(
-                  gridData: const FlGridData(show: true),
-                  titlesData: const FlTitlesData(show: true),
-                  borderData: FlBorderData(show: true),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: List.generate(
-                        dados.length,
-                        (index) => FlSpot(
-                          index.toDouble(),
-                          dados[index],
+              child: carregando
+                  ? const Center(child: CircularProgressIndicator())
+                  : precos.isEmpty
+                      ? const Center(
+                          child: Text("Sem histórico ainda. Faça uma compra ou venda."))
+                      : LineChart(
+                          LineChartData(
+                            gridData: const FlGridData(show: true),
+                            titlesData: const FlTitlesData(show: true),
+                            borderData: FlBorderData(show: true),
+                            lineBarsData: [
+                              LineChartBarData(
+                                spots: List.generate(
+                                  precos.length,
+                                  (index) => FlSpot(
+                                    index.toDouble(),
+                                    precos[index],
+                                  ),
+                                ),
+                                isCurved: true,
+                                barWidth: 3,
+                                dotData: const FlDotData(show: true),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      isCurved: true,
-                      barWidth: 3,
-                      dotData: const FlDotData(show: true),
-                    ),
-                  ],
-                ),
-              ),
             ),
           ],
         ),
