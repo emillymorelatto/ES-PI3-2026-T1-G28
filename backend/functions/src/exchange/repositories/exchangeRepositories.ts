@@ -1,10 +1,21 @@
 // Davi José Bertuolo Vitoreti, 25004168
 
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue, WriteBatch } from "firebase-admin/firestore";
 import { db } from "../shared/firebase";
 import { getUserDocument } from "../../auth/repositories/userRepository";
 
 const usersCollection = db.collection("users");
+const startupsCollection = db.collection("startups");
+
+// Atualiza o preço atual da startup e registra um ponto no histórico, dentro do batch.
+export function registrarMudancaPreco(batch: WriteBatch, startupId: string, novoPrecoCents: number): void {
+    const startupRef = startupsCollection.doc(startupId);
+    batch.update(startupRef, { currentTokenPriceCents: novoPrecoCents });
+    batch.set(startupRef.collection("priceHistory").doc(), {
+        priceCents: novoPrecoCents,
+        at: FieldValue.serverTimestamp(),
+    });
+}
 
 // Get balance
 export async function getBalance(uid: string): Promise<number> {

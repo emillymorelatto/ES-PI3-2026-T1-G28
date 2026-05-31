@@ -300,7 +300,7 @@ class _TelaCatalogoState extends State<TelaCatalogo> {
                   false,
                 ),
               ),
-              _buildNavItem(Icons.menu_book_outlined, 'Aprender', false),
+              _buildNavItem(Icons.storefront_outlined, 'Balcão', false),
               _buildNavItem(Icons.monetization_on_outlined, 'Investir', true),
               TextButton(
                 onPressed: () => Navigator.push(

@@ -1,3 +1,4 @@
+// DaviVitoreti
 import { FieldValue } from "firebase-admin/firestore";
 import {
     StartupDocument,
@@ -186,6 +187,24 @@ export async function createQuestion(
         .add(question);
     return questionRef.id;
 }
+const demoQuestions: Record<string, Array<{ text: string; answer: string }>> = {
+    "biochip-campus": [
+        { text: "Qual o faturamento mensal atual da startup?", answer: "A startup está em fase pré-receita. O faturamento projetado para o primeiro ano é de R$ 180 mil." },
+        { text: "Como os recursos captados serão utilizados?", answer: "60% em P&D de hardware, 25% em testes com laboratórios parceiros e 15% em operações." },
+        { text: "Qual é o valuation atual da startup?", answer: "Valuation simulado de R$ 1,25 milhão, baseado em 100.000 tokens a R$ 1,25 cada." },
+    ],
+    "rota-verde": [
+        { text: "Qual o custo mensal de operação?", answer: "Aproximadamente R$ 42 mil/mês, incluindo infraestrutura de dados e equipe." },
+        { text: "Quais são os principais concorrentes?", answer: "Loggi e iFood Delivery têm soluções similares, mas sem foco em métricas ambientais." },
+        { text: "Qual a projeção de crescimento para os próximos 12 meses?", answer: "Expansão para 3 cidades com crescimento estimado de 180% no volume de rotas otimizadas." },
+    ],
+    "mentorai": [
+        { text: "A startup possui dívidas ou pendências financeiras?", answer: "Não. O capital foi integralizado pelos fundadores e não há passivos externos." },
+        { text: "Qual a estratégia de saída para investidores?", answer: "Aquisição por plataforma educacional ou abertura de capital em 5 a 7 anos." },
+        { text: "Qual a margem de lucro atual?", answer: "Margem operacional de 22% com base nas receitas do piloto em andamento." },
+    ],
+};
+
 export async function seedDemoStartups(): Promise<string[]> {
     const batch = db.batch();
     for (const startup of demoStartups) {
@@ -196,6 +215,17 @@ export async function seedDemoStartups(): Promise<string[]> {
             createdAt: FieldValue.serverTimestamp(),
             updatedAt: FieldValue.serverTimestamp(),
         }, { merge: true });
+
+        const questions = demoQuestions[id] ?? [];
+        for (const question of questions) {
+            const questionRef = startupRef.collection("questions").doc();
+            batch.set(questionRef, {
+                text: question.text,
+                answer: question.answer,
+                visibility: "publica",
+                createdAt: FieldValue.serverTimestamp(),
+            });
+        }
     }
     await batch.commit();
     return demoStartups.map((startup) => startup.id);

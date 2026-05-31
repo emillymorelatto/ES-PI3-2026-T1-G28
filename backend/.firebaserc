@@ -1,5 +1,13 @@
 {
   "projects": {
     "default": "mesclainvest-7f892"
+  },
+  "targets": {},
+  "etags": {
+    "mesclainvest-7f892": {
+      "extensionInstances": {
+        "firestore-send-email": "e9f93ef32c25a2cf5d59391eb8796cb75ac33d969fc1956ecc37ddebe8e5bcec"
+      }
+    }
   }
 }

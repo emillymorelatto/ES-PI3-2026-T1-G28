@@ -286,15 +286,13 @@ class _TelaCarteiraState extends State<TelaCarteira> {
   // ── Ações (Depositar / Transferir / Converter) ────────────────────────────
   Widget _buildAcoes() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildAcaoItem(
           Icons.south_west_rounded,
           'Depositar',
           onTap: _abrirDialogoDeposito,
-        ),
-        _buildAcaoItem(Icons.north_east_rounded, 'Transferir'),
-        _buildAcaoItem(Icons.swap_horiz_rounded, 'Converter'),
+        )
       ],
     );
   }
@@ -682,7 +680,7 @@ class _TelaCarteiraState extends State<TelaCarteira> {
             children: [
               _buildNavItem(Icons.account_balance_wallet_rounded, 'Carteira',
                   true),
-              _buildNavItem(Icons.menu_book_outlined, 'Aprender', false),
+              _buildNavItem(Icons.storefront_outlined, 'Balcão', false),
               TextButton(
                 onPressed: () => Navigator.push(
                   context,

@@ -4,7 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 class PerguntasPrivadasInvestidor extends StatefulWidget {
-  const PerguntasPrivadasInvestidor({super.key});
+  final String startupId;
+  final String startupNome;
+
+  const PerguntasPrivadasInvestidor({
+    super.key,
+    required this.startupId,
+    required this.startupNome,
+  });
 
   @override
   State<PerguntasPrivadasInvestidor> createState() =>
@@ -13,94 +20,147 @@ class PerguntasPrivadasInvestidor extends StatefulWidget {
 
 class _PerguntasPrivadasInvestidorState
     extends State<PerguntasPrivadasInvestidor> {
-  bool carregando = true;
-  bool possuiTokens = false;
-
-  final List<String> perguntasPrivadas = [
-    "Qual foi o faturamento da startup nos últimos meses?",
-    "Qual é o custo mensal de operação da startup?",
-    "Qual é a margem de lucro atual?",
-    "Quais são os principais riscos do negócio?",
-    "Qual é a projeção de crescimento da startup?",
-    "Como os recursos captados serão utilizados?",
-    "A startup possui dívidas ou pendências financeiras?",
-    "Qual é o valuation atual da startup?",
-    "Quem são os principais concorrentes diretos?",
-    "Qual é a estratégia de saída para investidores?",
-  ];
+  bool _carregando = true;
+  bool _isInvestor = false;
+  List<dynamic> _perguntas = [];
 
   @override
   void initState() {
     super.initState();
-    verificarAcessoInvestidor();
+    _verificarAcessoECarregarPerguntas();
   }
 
-  Future<void> verificarAcessoInvestidor() async {
+  Future<void> _verificarAcessoECarregarPerguntas() async {
     try {
-      final result = await FirebaseFunctions.instance
-          .httpsCallable("checkInvestorAccess")
-          .call();
+      final accessResult = await FirebaseFunctions.instance
+          .httpsCallable('checkInvestorAccess')
+          .call({'startupId': widget.startupId});
 
-      final data = result.data;
+      final isInvestor = accessResult.data['isInvestor'] == true;
+
+      List<dynamic> perguntas = [];
+      if (isInvestor) {
+        final questionsResult = await FirebaseFunctions.instance
+            .httpsCallable('listPublicStartupQuestions')
+            .call({'startupId': widget.startupId});
+        perguntas = questionsResult.data['data']['questions'] ?? [];
+      }
 
       setState(() {
-        possuiTokens = data["possuiTokens"] == true;
-        carregando = false;
+        _isInvestor = isInvestor;
+        _perguntas = perguntas;
+        _carregando = false;
       });
     } catch (e) {
       setState(() {
-        possuiTokens = false;
-        carregando = false;
+        _isInvestor = false;
+        _carregando = false;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (carregando) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
-    if (!possuiTokens) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text("Perguntas Exclusivas"),
-        ),
-        body: const Center(
-          child: Padding(
-            padding: EdgeInsets.all(24),
-            child: Text(
-              "Você precisa possuir tokens para acessar as perguntas exclusivas de investidores.",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18),
-            ),
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F6F8),
       appBar: AppBar(
-        title: const Text("Perguntas Exclusivas"),
+        title: Text(widget.startupNome),
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF1A1A1A),
+        elevation: 0,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: perguntasPrivadas.length,
-        itemBuilder: (context, index) {
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            child: ListTile(
-              leading: const Icon(Icons.lock_open),
-              title: Text(perguntasPrivadas[index]),
-              subtitle: const Text("Conteúdo exclusivo para investidores"),
-            ),
-          );
-        },
-      ),
+      body: _carregando
+          ? const Center(child: CircularProgressIndicator())
+          : !_isInvestor
+              ? const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.lock_outline, size: 64, color: Color(0xFFBBBBBB)),
+                        SizedBox(height: 16),
+                        Text(
+                          'Conteúdo exclusivo para investidores',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF666666),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Adquira tokens desta startup para acessar as perguntas exclusivas.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 13, color: Color(0xFF999999)),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : _perguntas.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'Nenhuma pergunta disponível ainda.',
+                        style: TextStyle(color: Color(0xFF888888)),
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: _perguntas.length,
+                      itemBuilder: (context, index) {
+                        final p = _perguntas[index];
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                        p['visibility'] == 'privada' ? Icons.lock : Icons.lock_open,
+                                        size: 16, color: Color(0xFFE67E22)),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      p['visibility'] == 'privada' ? 'Pergunta exclusiva' : 'Pergunta pública',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Color(0xFFE67E22),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  p['text'] ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF1A1A1A),
+                                  ),
+                                ),
+                                if (p['answer'] != null) ...[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    p['answer'],
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: Color(0xFF555555),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
     );
   }
 }
