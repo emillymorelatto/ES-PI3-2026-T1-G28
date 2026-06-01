@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/servico_autenticacao.dart';
 import 'telaCadastro1.dart';
 import 'telarecuperacaosenha.dart';
-import 'telacarteira.dart';
+import 'tela2fa.dart';
 
 class TelaLogin extends StatefulWidget {
   const TelaLogin({super.key});
@@ -45,10 +45,19 @@ class _TelaLoginState extends State<TelaLogin> {
 
     if (erro != null) {
       setState(() { _mensagemErro = erro; _carregando = false; });
+      return;
+    }
+
+    // Login ok: dispara o 2º fator (código por e-mail) e vai para a tela de verificação.
+    final erro2fa = await _servicoAuth.iniciar2FA();
+    if (!mounted) return;
+
+    if (erro2fa != null) {
+      setState(() { _mensagemErro = erro2fa; _carregando = false; });
     } else {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const TelaCarteira()),
+        MaterialPageRoute(builder: (_) => const Tela2FA()),
       );
     }
   }

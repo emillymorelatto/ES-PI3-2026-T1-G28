@@ -4,18 +4,6 @@ export type StartupStage = "nova" | "em_operacao" | "em_expansao";
 export type QuestionVisibility = "publica" | "privada";
 
 /**
-* Dados mínimos do usuário autenticado necessários para regras de negócio.
-*
-* Este tipo é derivado do `request.auth` das Callable Functions. Ele evita que
-* os handlers dependam diretamente do formato completo do token Firebase e
-* preserva apenas o que o domínio precisa: UID e e-mail, quando disponível.
-*/
-export type AuthenticatedUser = {
-    uid: string;
-    email?: string;
-};
-
-/**
 * Representa um sócio, fundador ou participação societária da startup.
 *
 * Este tipo atende ao requisito de exibir estrutura societária e percentual de

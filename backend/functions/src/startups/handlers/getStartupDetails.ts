@@ -1,7 +1,7 @@
 // Murilo Moraes
 import { HttpsError, onCall } from "firebase-functions/https";
 import { requireAuthenticatedUser } from "../shared/auth";
-import { normalizeString } from "../shared/validation";
+import { normalizeString } from "../../auth/shared/validation";
 import {
     getStartupById,
     listPublicQuestions,

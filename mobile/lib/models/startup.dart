@@ -14,6 +14,8 @@ class Startup {
   final String retorno;
 
   final List<Map<String, dynamic>> socios;
+  // Preço atual de 1 token desta startup, expresso em Mescla Tokens.
+  final int currentTokenPrice;
   // Construtor da classe
   Startup({
     required this.id,
@@ -27,6 +29,7 @@ class Startup {
     required this.valuation,
     required this.retorno,
     required this.socios,
+    required this.currentTokenPrice,
   });
   // Converte dados do Firebase em objeto Startup
   factory Startup.fromMap(Map<String, dynamic> map, String id) {
@@ -45,6 +48,8 @@ class Startup {
       retorno: map['retorno'] ?? '',
 
       socios: List<Map<String, dynamic>>.from(map['socios'] ?? []),
+      currentTokenPrice:
+          (map['currentTokenPriceCents'] as num?)?.toInt() ?? 0,
     );
   }
 }

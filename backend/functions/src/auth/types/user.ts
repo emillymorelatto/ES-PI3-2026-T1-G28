@@ -10,5 +10,5 @@ export interface UserProfile {
 
 // documento completo salvo no Firestore — inclui saldo (apenas o backend altera)
 export interface UserDocument extends UserProfile {
-    saldoCents: number; // R$ 10,00 = 1000
+    balanceCents: number; // R$ 10,00 = 1000
 }

@@ -2,18 +2,18 @@
 
 import { FieldValue } from "firebase-admin/firestore";
 
-export interface TransacaoDocument {
+export interface TransactionDocument {
     uid: string;
     startupId: string;
-    tipo: "compra" | "venda";
-    quantidadeTokens: number;
-    precoPorTokenCents: number;
+    type: "buy" | "sell";
+    tokenQuantity: number;
+    pricePerTokenCents: number;
     totalCents: number;
     createdAt: FieldValue;
 }
 
-export interface InvestimentoDocument {
+export interface InvestmentDocument {
     startupId: string;
-    quantidadeTokens: number;
+    tokenQuantity: number;
     updatedAt: FieldValue;
 }
